@@ -107,15 +107,23 @@ button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlig
 .bar .row{justify-content:space-between}
 .bar .count{font-weight:900;font-size:18px}
 .prog{height:8px;background:var(--hair);border-radius:4px;overflow:hidden}.prog>i{display:block;height:100%;background:var(--brand);transition:width .3s ease}
-.meter{display:grid;gap:4px;min-width:0}
-.meter .track{position:relative;height:28px;border-bottom:2px solid var(--ink)}
-.meter .tick{position:absolute;bottom:-2px;width:2px;height:10px;background:var(--ink);transform:translateX(-50%)}
-.meter .dot{position:absolute;bottom:4px;width:18px;height:18px;border-radius:50%;background:var(--sel);border:3px solid var(--paper);box-shadow:0 0 0 2px var(--sel);transform:translateX(-50%);transition:left .5s ease}
-.meter .qmark{position:absolute;bottom:0;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid var(--cta);transform:translate(-50%,-14px)}
-.meter .ends{position:relative;height:20px;font-size:13px;color:var(--soft)}
+.meter{display:grid;gap:6px;min-width:0;background:var(--paper);border:2.5px solid var(--ink);border-radius:20px;padding:14px 20px 12px}
+.meter .now{font-size:16px;font-weight:700;color:var(--soft);justify-content:space-between}
+.meter .now b{color:var(--ink);font-weight:900;font-size:19px;margin-left:6px}
+.meter .now .muted{font-weight:400;font-size:13px}
+.meter .track{position:relative;height:34px;margin:0 6px}
+.meter .track::before{content:"";position:absolute;left:0;right:0;top:50%;height:6px;margin-top:-3px;background:var(--hair);border-radius:3px}
+.meter .tick{position:absolute;top:50%;width:2.5px;height:20px;margin-top:-10px;background:var(--soft);opacity:.55;transform:translateX(-50%)}
+.meter .dot{position:absolute;top:50%;width:30px;height:30px;margin-top:-15px;border-radius:50%;background:var(--paper);border:4px solid var(--good);transform:translateX(-50%);transition:left .7s cubic-bezier(.3,1.3,.5,1)}
+.meter .dot::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--good)}
+.meter .qmark{position:absolute;top:0;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:11px solid var(--cta);transform:translate(-50%,-6px)}
+.meter .ends{position:relative;height:22px;font-size:14px;color:var(--soft);margin:0 6px}
 .meter .ends span{position:absolute;transform:translateX(-50%);white-space:nowrap}
-.meter .ends span:first-child{transform:none}.meter .ends span:last-child{transform:translateX(-100%)}
-.meter .now{font-size:15px}
+.meter .ends span:first-child{transform:none}
+.meter .mv{font-family:var(--hand);font-size:22px;line-height:1.3;margin-top:4px}
+.meter .mv.up{color:var(--good)} .meter .mv.down{color:var(--pen)} .meter .mv.same{color:var(--mid)}
+@media (max-width:520px){.meter{padding:12px 14px 10px}.meter .mv{font-size:20px}}
+@media (prefers-reduced-motion:reduce){.meter .dot{transition:none}}
 .qcard{display:grid;gap:16px;min-width:0}
 .tags{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;font-size:14px;color:var(--soft)}
 .tag{padding:0}
@@ -166,7 +174,7 @@ button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlig
 .ubar .act{position:absolute;inset:0 auto 0 0;background:var(--good);border-radius:7px}
 .ubar .exp{position:absolute;top:-5px;bottom:-5px;width:4px;border-radius:2px;background:var(--cta);transform:translateX(-50%)}
 .pill{font-family:var(--hand);font-size:19px;white-space:nowrap;text-align:right;line-height:1.2}
-.pill.weak{color:var(--pen)} .pill.ok{color:var(--good)} .pill.mid{color:var(--soft)} .pill.na{color:var(--soft);font-family:var(--sans);font-size:13px}
+.pill.weak{color:var(--pen);border:2.5px solid var(--pen);border-radius:50% 46% 52% 48%/60% 52% 48% 40%;padding:1px 10px;transform:rotate(-4deg);justify-self:end} .pill.ok{color:var(--good)} .pill.mid{color:var(--soft)} .pill.na{color:var(--soft);font-family:var(--sans);font-size:13px}
 .wrong-item{border-top:2px dashed var(--hair);padding-top:16px;display:grid;gap:10px;min-width:0}
 .anim-wrap{display:grid;gap:10px;justify-items:start}.anim-wrap .anim-slot{width:100%}.anim-wrap .anim-slot:empty{display:none}
 .wrong-item details summary{min-height:44px;display:flex;align-items:center;cursor:pointer;color:var(--soft)}
@@ -6039,10 +6047,10 @@ function next(){
   S.q=q;S.sel=new Set();S.answered=false;practice();}
 const LVPOS=[['打底',-3],['基礎',-0.85],['均標',-0.2],['前標',0.405],['頂標',1.1]];
 const LVX=[-3,-0.85,-0.2,0.405,1.1,3];function lvPos(x){x=clamp(x,-3,3);for(let i=0;i<5;i++)if(x<=LVX[i+1])return(i+(x-LVX[i])/(LVX[i+1]-LVX[i]))*20;return 100}
-function meterHTML(){const th=S.session.theta,pos=lvPos;const qb=S.q?bOf(S.q):null;
-  return`<div class="meter"><div class="row now"><span>目前程度　<b>${level(th)[0]}</b></span>${qb!=null?'<span class="muted">▼ 這題的難度</span>':''}</div>
-  <div class="track" aria-hidden="true">${LVPOS.slice(1).map(([n,t])=>`<i class="tick" style="left:${pos(t)}%"></i>`).join('')}<div class="dot" style="left:${pos(th)}%"></div>${qb!=null?`<div class="qmark" style="left:${pos(qb)}%"></div>`:''}</div>
-  <div class="ends" aria-hidden="true">${LVPOS.map(([n,t],i)=>`<span style="left:${i?pos(t):0}%">${n}</span>`).join('')}</div></div>`}
+function meterHTML(mv,from){const th=S.session.theta,pos=lvPos;const qb=S.q&&!mv?bOf(S.q):null;
+  return`<div class="meter"><div class="row now"><span>目前程度<b>${level(th)[0]}</b></span>${qb!=null?'<span class="muted">▼ 這題的難度</span>':''}</div>
+  <div class="track" aria-hidden="true">${LVPOS.slice(1).map(([n,t])=>`<i class="tick" style="left:${pos(t)}%"></i>`).join('')}<div class="dot" style="left:${pos(from!=null?from:th)}%" data-to="${pos(th)}"></div>${qb!=null?`<div class="qmark" style="left:${pos(qb)}%"></div>`:''}</div>
+  <div class="ends" aria-hidden="true">${LVPOS.map(([n,t],i)=>`<span style="left:${i?pos(t):0}%">${n}</span>`).join('')}</div>${mv?`<div class="mv ${mv[0]}">${mv[1]}</div>`:''}</div>`}
 function practice(){
   const q=S.q,ses=S.session,L=SUBJ[S.subj].labels,n=ses.hist.length+1;
   const total=ses.mode==='diag'?DIAG_N:ses.mode==='twin'?ses.queue.length:0;
@@ -6074,7 +6082,7 @@ function practice(){
   window.scrollTo({top:0});}
 function submit(){
   if(S.answered)return;S.answered=true;const q=S.q,fill=($('#fillin')||{}).value||'';
-  const g=grade(q,S.sel,fill);const before=level(S.session.theta)[0];const d=update(q,g.s);
+  const g=grade(q,S.sel,fill);const th0=S.session.theta;const before=level(th0)[0];const d=update(q,g.s);
   if(g.s<1)S.session.wrong.push({id:q.id,given:q.type==='選填'?fill:[...S.sel].sort().join(','),s:g.s});
   if(S.session.mode!=='twin')save('session-'+S.subj,S.session);
   const ans=new Set(q.ans.split(',')),multi=q.type==='多選';
@@ -6096,7 +6104,9 @@ function submit(){
    <div class="row"><button class="btn accent" id="next">${last?'看結果':'下一題'}</button></div></section>`;
   $('#next').onclick=next;$('#next').focus({preventScroll:true});wireAnim($('#fb'));
   const rm=matchMedia('(prefers-reduced-motion: reduce)').matches;$('#fb').scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});
-  document.querySelector('.meter').outerHTML=meterHTML();}
+  const mv=g.s===1?['up','✓ 答對，'+(last?'程度往上調':'下一題難一點')]:g.s>0?[d>=0?'same':'down','△ 對一部分，'+(d>=0?(last?'程度微微往上':'下一題差不多難'):(last?'程度往下調一點':'下一題簡單一點'))]:['down','✗ 錯了，'+(last?'程度往下調':'下一題簡單一點')];
+  document.querySelector('.meter').outerHTML=meterHTML(mv,th0);const dot=document.querySelector('.meter .dot');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{dot.style.left=dot.dataset.to+'%'}));}
 function unitStats(){const st={};S.session.hist.forEach(h=>{const u=st[h.unit]=st[h.unit]||{n:0,s:0,p:0};u.n++;u.s+=h.s;u.p+=P(S.session.theta,h.b)});
   return Object.entries(st).map(([u,v])=>({u,n:v.n,act:v.s/v.n,exp:v.p/v.n,gap:(v.s-v.p)/v.n})).sort((a,b)=>a.gap-b.gap)}
 function spark(){const h=S.session.hist;if(h.length<2)return'';const W=600,H=90,pad=8,ys=t=>H-pad-(clamp(t,-3,3)+3)/6*(H-2*pad);
