@@ -23,11 +23,11 @@
 .board .ctl button{font:inherit;cursor:pointer;touch-action:manipulation;border:2px solid var(--ink);border-radius:12px;min-height:44px;padding:6px 16px;font-weight:700;background:transparent;color:var(--ink)}
 .board .ctl .b-next{background:var(--cta);color:var(--on-cta)}
 .board .ctl button:disabled{opacity:.35;cursor:not-allowed}
-.board .fig text{font-family:var(--sans);font-size:20px;fill:var(--soft)}
+.board .fig text{font-family:var(--sans);font-size:20px}.board .fig text:not([fill]){fill:var(--soft)}
 .board .fig .tick{font-size:16px}
-.board .fig .lbl{font-size:22px;fill:var(--ink);font-weight:700}
-.board .fig .hand{font-family:var(--hand);font-size:26px;fill:var(--pen)}
-.board .fig .handg{font-family:var(--hand);font-size:26px;fill:var(--good)}
+.board .fig .lbl{font-size:22px;font-weight:700}.board .fig .lbl:not([fill]){fill:var(--ink)}
+.board .fig .hand{font-family:var(--hand);font-size:26px}.board .fig .hand:not([fill]){fill:var(--pen)}
+.board .fig .handg{font-family:var(--hand);font-size:26px}.board .fig .handg:not([fill]){fill:var(--good)}
 .board .fig .big{font-size:30px}
 </style>
 <style>
@@ -219,7 +219,7 @@ const NS='http://www.w3.org/2000/svg';
 const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const C={ink:()=>css('--ink'),soft:()=>css('--soft'),good:()=>css('--good'),pen:()=>css('--pen'),cta:()=>css('--cta'),
-  grid:()=>css('--grid')||css('--hair'),paper:()=>css('--paper'),hair:()=>css('--hair'),brand:()=>css('--brand')||'#55ba6a',mid:()=>css('--mid')};
+  grid:()=>css('--grid')||css('--hair'),paper:()=>css('--paper'),hair:()=>css('--hair'),brand:()=>css('--brand')||'#55ba6a',mid:()=>css('--mid'),blue:()=>css('--blue')||'#2c6bc9'};
 function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs||{})e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
 function g(parent){return el('g',{},parent)}
 function clear(node){while(node&&node.firstChild)node.removeChild(node.firstChild)}
@@ -306,7 +306,7 @@ ANIM.add('BI-演化與分類-012',{W:600,H:450,
       async run(S,a){await hl(S,[['P','qrp'],['Q','qrp']],ANIM.API.C.good(),a);await hl(S,[['S','root']],ANIM.API.C.pen(),a,true);
         const L=ANIM.API;mark(S,S.N.qrp,'good');mark(S,S.N.root,'pen')}},
     {cap:'Q、R 的分支點在 Q、P 分支點的右邊，比較接近現在，出現得比較晚，(B) 對。',
-      async run(S,a){const L=ANIM.API,N=S.N;for(const k of ['qrp','qr']){L.line(S.layer,N[k].x,N[k].y,N[k].x,362,L.C.soft(),2,'6 6')}
+      async run(S,a){const L=ANIM.API,N=S.N;L.clear(S.layer);mark(S,N.qrp,'good');for(const k of ['qrp','qr']){L.line(S.layer,N[k].x,N[k].y,N[k].x,362,L.C.soft(),2,'6 6')}
         const gg=L.g(S.layer);mark({layer:gg},N.qr,'cta');L.text(gg,N.qr.x,388,'較晚','hand','middle');L.text(gg,N.qrp.x,388,'較早','hand','middle');
         if(a)await L.tween(700,p=>gg.style.opacity=p)}},
     {cap:'P 和 Q、P 和 R 都在同一個點會合，親緣一樣近，(C) 對。S、T 都是現存物種，是同一祖先分出的兩支，(D) 錯。',
@@ -316,7 +316,7 @@ ANIM.add('BI-演化與分類-012',{W:600,H:450,
     {cap:'S 和 Q、T 和 R 都要回到最左邊的根才會合，是同一個共同祖先，(E) 對。答案：選 (B)(C)(E)。',
       async run(S,a){const L=ANIM.API;L.clear(S.layer);
         await hl(S,[['S','root'],['Q','root']],L.C.good(),a);await hl(S,[['T','root'],['R','root']],L.C.cta(),a,true);
-        mark(S,S.N.root,'pen');L.text(S.layer,S.N.root.x,S.N.root.y+46,'根','hand','middle')}},
+        mark(S,S.N.root,'pen');L.text(S.layer,S.N.root.x-16,S.N.root.y+44,'根','hand','end')}},
   ]});
 // 沿樹枝畫出亮線（可動畫）
 async function hl(S,list,color,a,dash){const L=ANIM.API;const ps=list.map(([leaf,to])=>{const d='M'+S.route(leaf,to).map(p=>p.join(',')).join('L');
@@ -380,7 +380,7 @@ ANIM.add('BI-生態與多樣性-003',{W:600,H:550,
     {cap:'遺體交給分解者，有機碳被分解成 CO₂ 回到環境，(E) 對。化石燃料是古代生物遺體變成的，(D) 錯。',async run(S,a){const L=ANIM.API,G=S.layers[2],s=L.C.soft();
       L.arrow(G,368,300,432,300,s,3);
       L.el('path',{d:'M140,330Q300,400 458,333',fill:'none',stroke:s,'stroke-width':3,'stroke-dasharray':'8 6'},G);
-      L.arrow(G,440,343,462,331,s,3);L.text(G,300,380,'遺體','handg','middle');
+      L.arrow(G,440,343,462,331,s,3);L.text(G,300,402,'遺體','handg','middle');
       box(L,G,110,450,160,'化石燃料',L.C.mid());L.arrow(G,70,330,70,420,L.C.mid(),3);L.text(G,84,402,'古代遺體','hand');
       await fade(L,G,a)}},
     {cap:'碳在這個圈裡繞來繞去，可以循環；能量卻是單向流動、逐級散失，不能循環，(A) 錯。答案：選 (C)(E)。',async run(S,a){const L=ANIM.API,G=S.layers[3],m=L.C.pen();
@@ -708,8 +708,9 @@ ANIM.add('CH-分離純化與實驗-003',{W:620,H:440,
     {cap:'加明礬生成膠狀物，吸住懸浮微粒聚成大塊沉下去，(B) 對。砂濾只攔得住不溶的顆粒，離子照樣通過，(A) 錯。',async run(S,a){const L=ANIM.API;
       const from=BLOB.map(p=>p.slice());
       await L.tween(a?1200:0,p=>S.P.b.forEach((e,k)=>{e.setAttribute('cx',L.lerp(from[k][0],180+k*22,p));e.setAttribute('cy',L.lerp(from[k][1],BY[1]-16,p))}));
-      L.text(S.notes,440,140,'沉降除去','handg');L.text(S.notes,440,260,'砂濾擋不住','hand')}},
+      L.text(S.notes,440,140,'沉降除去','handg');L.text(S.notes,440,260,'砂濾擋不住','hand').setAttribute('data-a',1)}},
     {cap:'活性碳表面積很大，把色素和異味分子吸附在表面，(C) 對。',async run(S,a){const L=ANIM.API;
+      S.notes.querySelectorAll('[data-a]').forEach(e=>e.remove());
       L.el('rect',{x:BX[1]-36,y:BY[0]+10,width:26,height:BY[1]-BY[0]-60,rx:6,fill:L.C.ink(),opacity:.8},S.tools);
       L.text(S.tools,BX[1]-10,BY[0]-16,'活性碳','lbl','end');
       const from=MOL.map(p=>p.slice());
@@ -721,7 +722,7 @@ ANIM.add('CH-分離純化與實驗-003',{W:620,H:440,
       const from=ION.map(p=>p.slice());
       await L.tween(a?1400:0,p=>S.P.i.forEach((e,k)=>{const tx=55+(k%4)*24,ty=BY[0]+30+Math.floor(k/4)*26;
         e.setAttribute('cx',L.lerp(from[k][0],tx,p));e.setAttribute('cy',L.lerp(from[k][1],ty,p))}));
-      L.text(S.notes,440,290,'被膜擋住','handg')}},
+      L.text(S.notes,440,260,'被膜擋住','handg')}},
     {cap:'煮沸可以殺菌，但食鹽不會揮發，水變少反而更濃，(E) 錯。答案：選 (B)(C)(D)。',async run(S,a){const L=ANIM.API;
       const t=L.text(S.notes,500,360,'選 (B)(C)(D)','hand big','middle');if(a)await L.tween(600,p=>t.style.opacity=p)}},
   ]});
@@ -781,11 +782,12 @@ ANIM.add('CH-化學與環境能源-009',{W:600,H:440,
       await L.tween(a?1200:0,p=>m.setAttribute('cx',L.lerp(S.X(7),S.X(5.6),p)))}},
     {cap:'所以酸雨的標準是 pH < 5.6。pH 在 5.6～7 之間雖然小於 7，還不算酸雨，(B) 錯。',async run(S,a){const L=ANIM.API;
       const r=L.el('rect',{x:S.X(3),y:S.AY-22,width:0,height:22,fill:L.C.pen(),'fill-opacity':0.25},S.lay);
-      const r2=L.el('rect',{x:S.X(5.6),y:S.AY+48,width:S.X(7)-S.X(5.6),height:14,fill:L.C.soft(),'fill-opacity':0.25},S.lay);
+      const r2=L.el('rect',{x:S.X(5.6),y:S.AY+48,width:S.X(7)-S.X(5.6),height:14,fill:L.C.soft(),'fill-opacity':0.25,'data-b':1},S.lay);
       L.text(S.lay,S.X(4.3),S.AY-40,'酸雨','hand','middle');
-      L.text(S.lay,S.X(6.3),S.AY+94,'小於 7 但不算酸雨','hand','middle');
+      L.text(S.lay,S.X(6.3),S.AY+94,'小於 7 但不算酸雨','hand','middle').setAttribute('data-b',1);
       await L.tween(a?900:0,p=>r.setAttribute('width',(S.X(5.6)-S.X(3))*p))}},
     {cap:'pH 每少 1，[H⁺] 就變 10 倍。pH 4.6 的 [H⁺] 是 pH 5.6 的 10 倍，不是十分之一，(E) 錯。',eq:'pH 少 1 → [H⁺] 變 10 倍',async run(S,a){const L=ANIM.API;
+      S.lay.querySelectorAll('[data-b]').forEach(e=>e.remove());
       const base=420,h1=20,h2=200,w=56;
       const b1=L.el('rect',{x:S.X(5.6)-w/2,y:base-h1,width:w,height:h1,fill:L.C.good(),'fill-opacity':0.35,stroke:L.C.good(),'stroke-width':2},S.lay);
       const b2=L.el('rect',{x:S.X(4.6)-w/2,y:base,width:w,height:0,fill:L.C.pen(),'fill-opacity':0.3,stroke:L.C.pen(),'stroke-width':2},S.lay);
@@ -795,6 +797,9 @@ ANIM.add('CH-化學與環境能源-009',{W:600,H:440,
       const t=L.text(S.lay,S.X(4.6)+w/2+12,base-h2+24,'pH 4.6：10 倍','hand');
       await L.tween(a?1200:0,p=>{b2.setAttribute('height',h2*p);b2.setAttribute('y',base-h2*p);t.style.opacity=p})}},
     {cap:'石灰石脫硫會放出 CO₂，(C) 錯；酸雨主要來自硫和氮的氧化物，(D) 錯。只有 (A) 對，選 (A)。',eq:'CaCO₃ + SO₂ → CaSO₃ + CO₂',async run(S,a){const L=ANIM.API;
+      L.clear(S.lay);L.dot(S.lay,S.X(5.6),S.AY,L.C.good(),9);L.text(S.lay,S.X(5.6),S.AY-40,'正常雨水 5.6','handg','middle');
+      L.el('rect',{x:S.X(3),y:S.AY-22,width:S.X(5.6)-S.X(3),height:22,fill:L.C.pen(),'fill-opacity':0.25},S.lay);L.text(S.lay,S.X(4.3),S.AY-40,'酸雨','hand','middle');
+      L.text(S.lay,S.X(5.6),S.AY+110,'選 (A)','hand big','middle');
       const c=L.el('circle',{cx:S.X(5.6),cy:S.AY,r:0,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},S.lay);
       await L.tween(a?700:0,p=>c.setAttribute('r',22*p))}},
   ]});
@@ -942,6 +947,7 @@ ANIM.add('CH-化學鍵與分子結構-002',{W:620,H:520,
       L.arrow(S.lay,60,60,140,60,L.C.cta(),3);L.text(S.lay,40,300,'鍵結仍在，可延展','handg');
       await L.tween(a?1400:0,p=>S.rows[0].g.setAttribute('transform',`translate(${80*p},0)`))}},
     {cap:'合金裡混進大小不同的原子，原子層變得凹凸不平，比較難滑動，所以合金通常比純金屬硬，(D) 對。',async run(S,a){const L=ANIM.API;
+      L.clear(S.lay);S.rows[0].g.removeAttribute('transform');
       L.text(S.lay,30,348,'合金','lbl');
       const ys=[400,470],xs=[100,180,260,340,420,500],big=[[0,2],[1,4]];
       ys.forEach((y,r)=>xs.forEach((x,i)=>{const b=big.some(([rr,ii])=>rr===r&&ii===i);
@@ -1053,8 +1059,8 @@ ANIM.add('CH-原子結構與週期表-009',{W:600,H:450,
     {cap:'鎵 Ga 在第 13 族、砷 As 在第 15 族，同一週期但不同族，(B) 錯。砷的價電子是 5 不是 3，(C) 錯。',eq:'Ga：13 族（價電子 3）   As：15 族（價電子 5）',async run(S,a){const L=ANIM.API;
       ['Ga','As'].forEach(k=>{S.fills[k].setAttribute('fill',L.C.pen())});
       await L.tween(a?700:0,p=>['Ga','As'].forEach(k=>S.fills[k].setAttribute('fill-opacity',0.18*p)))}},
-    {cap:'矽是類金屬，導電性介於金屬和非金屬之間，(E) 錯。只有 (A) 正確，選 (A)。',eq:'Si、Ge 同為第 14 族，價電子數 4',async run(S,a){const L=ANIM.API;
-      const [x,y]=S.cell(1,1);
+    {cap:'矽是類金屬，導電性介於金屬和非金屬之間，(E) 錯。只有 (A) 正確，選 (A)。',eq:'Si、Ge 同為第 14 族，價電子數 4 → 選 (A)',async run(S,a){const L=ANIM.API;
+      ['Ga','As'].forEach(k=>{S.fills[k].setAttribute('fill',L.C.paper());S.fills[k].setAttribute('fill-opacity',1)});const [x,y]=S.cell(1,1);
       const c=L.el('rect',{x:x-4,y:y-4,width:S.cw+8,height:2*S.ch+8,rx:12,fill:'none',stroke:L.C.cta(),'stroke-width':4},S.lay);
       await L.tween(a?600:0,p=>c.style.opacity=p)}},
   ]});
@@ -1113,11 +1119,11 @@ ANIM.add('CH-氧化還原-004',{W:600,H:400,
     {cap:'先標出每個 Cl 的氧化數。NaClO 裡 Na 是 +1、O 是 −2，所以 Cl 是 +1，(A) 對。2HCl 拆成兩個來看。',eq:'(+1) + x + (−2) = 0 → x = +1',async run(S,a){const L=ANIM.API;
       const ons=[['+1',62],['−1',162],['−1',258],['−1',354],['0',446]];
       for(const [t,x] of ons){L.text(S.lay,x,S.ON,t,'hand','middle');if(a)await L.wait(250)}}},
-    {cap:'NaClO 的 Cl 從 +1 降到 0，得到 1 個電子，被還原，是氧化劑，所以 (D) 說它被氧化是錯的。',async run(S,a){const L=ANIM.API;
+    {cap:'NaClO 的 Cl 從 +1 降到 0，得到 1 個電子，被還原，是氧化劑，所以 (D) 說它被氧化是錯的。',eq:'NaClO 的 Cl：+1 → 0，得 1 e⁻，被還原（氧化劑）',async run(S,a){const L=ANIM.API;
       const g=S.curve(S.lay,62,S.ON-30,250,20,440,S.ON-30,L.C.good());
       L.text(S.lay,250,68,'+1 → 0，得 1 e⁻，被還原','handg','middle');
       await L.tween(a?900:0,p=>g.style.opacity=p)}},
-    {cap:'兩個 HCl 只有一個的 Cl 從 −1 升到 0 進入 Cl₂（被氧化）；另一個還是 −1 留在 NaCl。只有一半當還原劑，(B) 錯。',async run(S,a){const L=ANIM.API;
+    {cap:'兩個 HCl 只有一個的 Cl 從 −1 升到 0 進入 Cl₂（被氧化）；另一個還是 −1 留在 NaCl。只有一半當還原劑，(B) 錯。',eq:'2 個 HCl：1 個 Cl −1 → 0（還原劑），1 個仍是 −1',async run(S,a){const L=ANIM.API;
       const g1=S.curve(S.lay,162,S.EY+44,300,420,446,S.EY+14,L.C.pen());
       const g2=S.curve(S.lay,258,S.EY+44,306,300,350,S.EY+14,L.C.soft(),'7 6');
       L.text(S.lay,306,S.EY+82,'−1 不變','hand','middle');
@@ -1134,34 +1140,34 @@ ANIM.add('CH-氧化還原-010',{W:600,H:530,
     row(150,'③',[['Fe₂O₃',100],['+',162],['3CO',220],['→',280],['2Fe',340],['+',398],['3CO₂',460]]);
     row(340,'②',[['CO₂',100],['+',162],['C',220],['→',280],['2CO',350]]);
     row(490,'④',[['CaCO₃',110],['→',200],['CaO',270],['+',328],['CO₂',390]]);
-    const lay=L.g(svg);
+    const lay=L.g(svg),ex=L.g(svg);
     const curve=(par,x1,y1,cx,cy,x2,y2,col,dash)=>{const g=L.g(par);
       const path=L.el('path',{d:`M${x1},${y1}Q${cx},${cy} ${x2},${y2}`,fill:'none',stroke:col,'stroke-width':3},g);
       if(dash)path.setAttribute('stroke-dasharray',dash);
       const a=Math.atan2(y2-cy,x2-cx),h=12;
       L.el('path',{d:`M${x2},${y2}L${x2-h*Math.cos(a-0.45)},${y2-h*Math.sin(a-0.45)}L${x2-h*Math.cos(a+0.45)},${y2-h*Math.sin(a+0.45)}Z`,fill:col},g);return g};
-    return{lay,curve,reset(){L.clear(lay)}}},
+    return{lay,ex,curve,reset(){L.clear(lay);L.clear(ex)}}},
   steps:[
-    {cap:'先看反應 ③，標出 Fe 和 C 的氧化數：Fe 從 +3 變成 0，(B) 對；C 從 +2 升到 +4。',eq:'Fe：+3 → 0    C：+2 → +4',async run(S,a){const L=ANIM.API;
+    {cap:'先看反應 ③，標出 Fe 和 C 的氧化數：Fe 從 +3 變成 0，(B) 對；C 從 +2 升到 +4。',eq:'Fe：+3 → 0；C：+2 → +4',async run(S,a){const L=ANIM.API;
       [['+3',100],['+2',220],['0',340],['+4',460]].forEach(([t,x])=>L.text(S.lay,x,114,t,'hand','middle'));
       const g1=S.curve(S.lay,100,84,220,30,340,84,L.C.good());
       const g2=S.curve(S.lay,220,166,340,250,460,166,L.C.pen());
       L.text(S.lay,220,40,'得電子，被還原','handg','middle');L.text(S.lay,340,232,'失電子，被氧化','hand','middle');
       await L.tween(a?900:0,p=>{g1.style.opacity=p;g2.style.opacity=p})}},
-    {cap:'CO 裡的 C 氧化數升高，CO 被氧化，所以 CO 是還原劑，(A) 對。',async run(S,a){const L=ANIM.API;
+    {cap:'CO 裡的 C 氧化數升高，CO 被氧化，所以 CO 是還原劑，(A) 對。',eq:'CO 的 C：+2 → +4，被氧化 → 還原劑',async run(S,a){const L=ANIM.API;
       const c=L.el('rect',{x:180,y:120,width:80,height:42,rx:10,fill:'none',stroke:L.C.cta(),'stroke-width':3},S.lay);
       L.text(S.lay,500,44,'CO 是還原劑','hand','middle');
       await L.tween(a?600:0,p=>c.style.opacity=p)}},
     {cap:'每個 Fe 從 +3 到 0 得 3 個電子，生成 1 mol Fe 只轉移 3 mol 電子，生成 2 mol 才是 6 mol，(E) 錯。',eq:'1 mol Fe ↔ 3 mol e⁻',async run(S,a){const L=ANIM.API;
-      const t=L.text(S.lay,560,114,'每個 Fe 得 3e⁻','handg','end');t.setAttribute('y',84);
+      const t=L.text(S.ex,560,84,'每個 Fe 得 3e⁻','handg','end');
       await L.tween(a?600:0,p=>t.style.opacity=p)}},
-    {cap:'反應 ② 的兩個 C：單質 C 從 0 升到 +2 被氧化，CO₂ 的 C 從 +4 降到 +2 被還原，碳同時被氧化和還原，(D) 對。',eq:'C：0 → +2    CO₂ 的 C：+4 → +2',async run(S,a){const L=ANIM.API;
+    {cap:'反應 ② 的兩個 C：單質 C 從 0 升到 +2 被氧化，CO₂ 的 C 從 +4 降到 +2 被還原，碳同時被氧化和還原，(D) 對。',eq:'C：0 → +2；CO₂ 的 C：+4 → +2',async run(S,a){const L=ANIM.API;L.clear(S.ex);
       [['+4',100],['0',220],['+2',350]].forEach(([t,x])=>L.text(S.lay,x,304,t,'hand','middle'));
       const g1=S.curve(S.lay,220,356,285,396,340,356,L.C.pen());
       const g2=S.curve(S.lay,100,356,225,450,350,362,L.C.good());
       L.text(S.lay,380,394,'被氧化','hand');L.text(S.lay,380,430,'被還原','handg');
       await L.tween(a?900:0,p=>{g1.style.opacity=p;g2.style.opacity=p})}},
-    {cap:'反應 ④ 的 Ca、C、O 氧化數都沒變，不是氧化還原，(C) 錯。正確的是 (A)(B)(D)，選 (A)(B)(D)。',eq:'④：Ca +2、C +4、O −2，前後不變',async run(S,a){const L=ANIM.API;
+    {cap:'反應 ④ 的 Ca、C、O 氧化數都沒變，不是氧化還原，(C) 錯。正確的是 (A)(B)(D)，選 (A)(B)(D)。',eq:'④ 氧化數不變，(C) 錯；選 (A)(B)(D)',async run(S,a){const L=ANIM.API;
       const t=L.text(S.lay,580,490,'氧化數不變','hand','end');
       await L.tween(a?600:0,p=>t.style.opacity=p)}},
   ]});
@@ -1243,10 +1249,12 @@ ANIM.add('CH-水溶液與酸鹼-006',{W:620,H:574,
       await L.tween(a?700:0,p=>g.style.opacity=p)}},
     {cap:'氯化鈉是強電解質，完全解離；比鹽酸低是因為 H⁺ 在水中跑得特別快，不是部分解離，(A) 錯。',async run(S,a){const L=ANIM.API;
       [3,4].forEach(i=>{S.bars[i].setAttribute('fill',L.C.cta());S.bars[i].setAttribute('stroke',L.C.cta())});
-      const t=L.text(S.lay,600,334,'NaCl、HCl 都完全解離','hand','end');
+      const t=L.text(S.lay,600,334,'NaCl、HCl 都完全解離','hand','end');S.tA=t;
       await L.tween(a?600:0,p=>t.style.opacity=p)}},
     {cap:'醋酸稀釋成 0.010 M，單位體積裡的離子變少，導電度會下降，(E) 錯。正確的是 (B)(D)，選 (B)(D)。',run(S){const L=ANIM.API;
-      L.text(S.lay,600,S.y(2)+8,'稀釋 → 變小','hand','end')}},
+      if(S.tA)S.tA.remove();S.bars[3].setAttribute('fill',L.C.soft());S.bars[3].setAttribute('stroke',L.C.soft());
+      S.bars[4].setAttribute('fill',L.C.good());S.bars[4].setAttribute('stroke',L.C.good());
+      L.text(S.lay,600,S.y(2)+8,'稀釋 → 變小','hand','end');L.text(S.lay,600,334,'(B) 分子不解離　(D) 部分解離','handg','end')}},
   ]});
 
 ANIM.add('CH-物質性質與相變-005',{W:620,H:470,
@@ -1257,18 +1265,18 @@ ANIM.add('CH-物質性質與相變-005',{W:620,H:470,
     [10,20,30,40].forEach(m=>L.text(svg,X(m),Y(-180)+22,String(m),'tick','middle'));
     L.text(svg,X(40),Y(-180)+46,'分子量','tick','end');L.text(svg,X(10)-8,Y(120)-14,'沸點 °C','tick','start');
     const data=[['CH₄',16,-161],['NH₃',17,-33],['H₂O',18,100],['H₂S',34,-60]];
-    const lay=L.g(svg);
-    return{X,Y,data,lay,reset(){L.clear(lay)}}},
+    const lay=L.g(svg),ann=L.g(svg);
+    return{X,Y,data,lay,ann,reset(){L.clear(lay);L.clear(ann)}}},
   steps:[
     {cap:'把四種氫化物的沸點對分子量畫出來。',async run(S,a){const L=ANIM.API;
       for(const [n,m,t] of S.data){const g=L.g(S.lay);L.dot(g,S.X(m),S.Y(t),L.C.good(),8);
         const lb=n+'  '+String(t).replace('-','−');if(n==='H₂S')L.text(g,S.X(m),S.Y(t)+34,lb,'lbl','middle');else L.text(g,S.X(m)+14,S.Y(t)+8,lb,'lbl');if(a){g.style.opacity=0;await L.tween(300,p=>g.style.opacity=p)}}}},
     {cap:'H₂S 分子量 34 比水的 18 大，沸點卻低很多，「分子量大沸點一定高」不對，(B) 錯。水分子間有氫鍵，沸點才特別高，(C) 對。',async run(S,a){const L=ANIM.API;
-      const ar=L.arrow(S.lay,S.X(33),S.Y(-45),S.X(20),S.Y(88),L.C.cta(),3);
-      L.text(S.lay,S.X(27),S.Y(40),'氫鍵','hand');
+      const ar=L.arrow(S.ann,S.X(33),S.Y(-45),S.X(20),S.Y(88),L.C.cta(),3);
+      L.text(S.ann,S.X(27),S.Y(40),'氫鍵','hand');
       await L.tween(a?700:0,p=>ar.style.opacity=p)}},
     {cap:'沸騰只是分子彼此分開，克服的是分子間作用力，分子裡的 O–H、N–H 共價鍵都沒斷，(A)、(D) 錯。',async run(S,a){const L=ANIM.API;
-      const g=L.g(S.lay);L.el('rect',{x:440,y:120,width:170,height:270,rx:12,fill:'none',stroke:L.C.ink(),'stroke-width':2},g);
+      L.clear(S.ann);const g=L.g(S.ann);L.el('rect',{x:440,y:120,width:170,height:270,rx:12,fill:'none',stroke:L.C.ink(),'stroke-width':2},g);
       L.text(g,525,108,'沸騰時','lbl','middle');
       const mols=[];const start=[[480,350],[530,355],[575,345],[505,315],[555,312]],end=[[475,160],[580,180],[520,230],[470,290],[585,275]];
       start.forEach((p,i)=>{const m=L.g(g);L.el('circle',{cx:0,cy:0,r:13,fill:L.C.pen(),'fill-opacity':0.3,stroke:L.C.pen(),'stroke-width':2},m);
@@ -1277,9 +1285,11 @@ ANIM.add('CH-物質性質與相變-005',{W:620,H:470,
       const set=p=>mols.forEach((m,i)=>m.setAttribute('transform',`translate(${L.lerp(start[i][0],end[i][0],p)},${L.lerp(start[i][1],end[i][1],p)})`));
       set(0);await L.tween(a?1500:0,p=>{set(p);hb.style.opacity=1-p});
       L.text(g,525,420,'分子完整','handg','middle')}},
-    {cap:'沸點越低，分子間作用力越弱。CH₄ 沸點 −161 °C 最低，作用力最弱，(E) 對。選 (C)(E)。',async run(S,a){const L=ANIM.API;
-      const c=L.el('circle',{cx:S.X(16),cy:S.Y(-161),r:0,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},S.lay);
-      L.text(S.lay,S.X(16)+14,S.Y(-161)-24,'最弱','hand');
+    {cap:'沸點越低，分子間作用力越弱。CH₄ 沸點 −161 °C 最低，作用力最弱，(E) 對。（前面：水有氫鍵，(C) 對）選 (C)(E)。',eq:'CH₄ 沸點最低 → 分子間作用力最弱',async run(S,a){const L=ANIM.API;
+      L.clear(S.ann);
+      L.text(S.ann,S.X(18)+14,S.Y(100)+36,'氫鍵 (C)','hand');
+      const c=L.el('circle',{cx:S.X(16),cy:S.Y(-161),r:0,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},S.ann);
+      L.text(S.ann,S.X(16)+14,S.Y(-161)-24,'最弱 (E)','hand');
       await L.tween(a?600:0,p=>c.setAttribute('r',20*p))}},
   ]});
 
@@ -1300,14 +1310,14 @@ ANIM.add('ES-固體地球-005',{W:600,H:520,
   steps:[
     {cap:'花蓮外海發生一次地震。規模是描述地震本身釋放多少能量，一次地震只有一個規模：6.2。',eq:'規模 6.2（只有一個值）',run(S){const L=ANIM.API;
       S.halo(L.text(S.lay,S.E[0]+22,S.E[1]+40,'規模 6.2','hand','start'))}},
-    {cap:'震度是各地地表搖晃的程度。震波往外傳，離震央越遠通常搖得越輕，所以各地震度不同。',async run(S,a){const L=ANIM.API;
+    {cap:'震度是各地地表搖晃的程度。震波往外傳，離震央越遠通常搖得越輕，所以各地震度不同。',eq:'震度：各地搖晃程度，離震央越遠通常越小',async run(S,a){const L=ANIM.API;
       const cs=[1,2,3].map(()=>L.el('circle',{cx:S.E[0],cy:S.E[1],r:0,fill:'none',stroke:L.C.cta(),'stroke-width':2.5},S.rings));
       await L.tween(a?1800:0,p=>cs.forEach((c,i)=>{c.setAttribute('r',p*60*(i+1));c.setAttribute('opacity',1-i*0.25)}))}},
-    {cap:'花蓮離震央近，震度 5 弱；臺北比較遠，震度 3 級。同一個規模，各地震度可以不一樣。',async run(S,a){const L=ANIM.API;
+    {cap:'花蓮離震央近，震度 5 弱；臺北比較遠，震度 3 級。同一個規模，各地震度可以不一樣。',eq:'花蓮 5 弱、臺北 3 級，規模都是 6.2',async run(S,a){const L=ANIM.API;
       const t1=S.halo(L.text(S.lay,S.Hl[0]-12,S.Hl[1]+40,'震度 5 弱','hand','end')),t2=S.halo(L.text(S.lay,S.Tp[0]-12,S.Tp[1]-42,'震度 3 級','hand','end'));
       await L.tween(a?700:0,p=>{t1.style.opacity=p;t2.style.opacity=p})}},
     {cap:'另外，規模每加 1，能量約變 32 倍，不是 2 倍。所以正確的是：一次地震只有一個規模，各地震度可以不同，選 (D)。',eq:'規模 +1 → 能量約 × 32',async run(S,a){const L=ANIM.API;
-      const x=390,y=470;L.el('rect',{x,y:y-10,width:10,height:10,fill:L.C.cta()},S.lay);
+      L.clear(S.rings);const x=390,y=470;L.el('rect',{x,y:y-10,width:10,height:10,fill:L.C.cta()},S.lay);
       const big=L.el('rect',{x:x+40,y:y,width:0,height:0,fill:L.C.cta(),opacity:.6},S.lay);
       await L.tween(a?900:0,p=>{const s=10*Math.sqrt(1+31*p);big.setAttribute('y',y-s);big.setAttribute('width',s);big.setAttribute('height',s)});
       L.text(S.lay,x+5,y+28,'1','tick','middle');L.text(S.lay,x-14,y-70,'規模 +1 的能量','tick','start');L.text(S.lay,x+40+28,y+28,'32 倍','tick','middle')}},
@@ -1378,14 +1388,14 @@ ANIM.add('ES-固體地球-016',{W:600,H:470,
       [20,100,200].forEach(d=>L.text(g,ix(d),by+bh-8,String(d),'tick','middle'));
       L.text(g,bx+8,by+20,'放大 0～250 km','tick','start');
       await L.tween(a?600:0,p=>g.style.opacity=p)}},
-    {cap:'3500 km 處 S 波速率是 0。S 波不能在液體中傳播，所以這裡（外核）是液態，(C) 對。',async run(S,a){const L=ANIM.API;
-      S.inset.style.display='none';const g=L.g(S.lay);L.el('circle',{cx:S.X(3500),cy:S.Y(0),r:16,fill:'none',stroke:L.C.pen(),'stroke-width':3},g);
+    {cap:'3500 km 處 S 波速率是 0。S 波不能在液體中傳播，所以這裡（外核）是液態，(C) 對。',eq:'3500 km：S 波 0 → 液態（外核）',async run(S,a){const L=ANIM.API;
+      S.inset.style.display='none';const g=S.gC=L.g(S.lay);L.el('circle',{cx:S.X(3500),cy:S.Y(0),r:16,fill:'none',stroke:L.C.pen(),'stroke-width':3},g);
       L.text(g,S.X(3500),S.Y(0)-26,'S = 0 → 液態','hand','middle');
       await L.tween(a?600:0,p=>g.style.opacity=p)}},
     {cap:'P 波在這裡從 13.7 驟降到 9.3，是因為物態變成液態；地核以鐵、鎳為主，密度比地函大，不是變小，(D) 錯。',eq:'P：13.7 → 9.3（物態改變）',async run(S,a){const L=ANIM.API;
-      const g=L.g(S.lay);await L.tween(a?800:0,p=>{L.clear(g);L.arrow(g,S.X(2800)+8,S.Y(13.7),L.lerp(S.X(2800)+8,S.X(3500)-6,p),L.lerp(S.Y(13.7),S.Y(9.3)-6,p),L.C.pen())})}},
-    {cap:'5500 km 處 S 波又出現（3.6 km/s），S 波只能在固體中傳播，所以內核是固態，(E) 對。答案選 (B)(C)(E)。',async run(S,a){const L=ANIM.API;
-      const g=L.g(S.lay);L.el('circle',{cx:S.X(5500),cy:S.Y(3.6),r:16,fill:'none',stroke:L.C.good(),'stroke-width':3},g);
+      S.gC.style.display='none';const g=S.gD=L.g(S.lay);await L.tween(a?800:0,p=>{L.clear(g);L.arrow(g,S.X(2800)+8,S.Y(13.7),L.lerp(S.X(2800)+8,S.X(3500)-6,p),L.lerp(S.Y(13.7),S.Y(9.3)-6,p),L.C.pen())})}},
+    {cap:'5500 km 處 S 波又出現（3.6 km/s），S 波只能在固體中傳播，所以內核是固態，(E) 對。答案選 (B)(C)(E)。',eq:'外核 S = 0 → 液態；內核 S = 3.6 → 固態',async run(S,a){const L=ANIM.API;
+      S.gD.remove();S.gC.style.display='';const g=L.g(S.lay);L.el('circle',{cx:S.X(5500),cy:S.Y(3.6),r:16,fill:'none',stroke:L.C.good(),'stroke-width':3},g);
       L.text(g,S.X(5500)-24,S.Y(3.6)+8,'固態','handg','end');
       await L.tween(a?600:0,p=>g.style.opacity=p)}},
   ]});
@@ -1717,17 +1727,19 @@ ANIM.add('ES-氣候與環境-004',{W:600,H:520,
   steps:[
     {cap:'橫軸是時間尺度，每一格差 10 倍，從 1 年一路到百億年。',run(S){}},
     {cap:'先把每個選項「說的」時間尺度標上去（空心記號）。',async run(S,a){const L=ANIM.API;
-      for(const r of S.R){const c=Array.isArray(r.claim)?r.claim:[r.claim,r.claim];
-        if(c[0]===c[1])L.el('circle',{cx:S.X(c[0]),cy:r.y,r:9,fill:L.C.paper(),stroke:L.C.soft(),'stroke-width':3},S.lay);
-        else L.el('rect',{x:S.X(c[0]),y:r.y-9,width:S.X(c[1])-S.X(c[0]),height:18,rx:9,fill:'none',stroke:L.C.soft(),'stroke-width':3},S.lay);
+      for(const r of S.R){const c=Array.isArray(r.claim)?r.claim:[r.claim,r.claim];let m;
+        if(c[0]===c[1])m=L.el('circle',{cx:S.X(c[0]),cy:r.y,r:9,fill:L.C.paper(),stroke:L.C.soft(),'stroke-width':3},S.lay);
+        else m=L.el('rect',{x:S.X(c[0]),y:r.y-9,width:S.X(c[1])-S.X(c[0]),height:18,rx:9,fill:'none',stroke:L.C.soft(),'stroke-width':3},S.lay);
+        if(!r.ok)m.setAttribute('data-bad','1');
         if(a)await L.wait(200)}}},
     {cap:'實際上：太陽黑子週期約 11 年，冰期循環約十萬年，太陽變亮要數億到數十億年。(A)(C)(E) 都差很多。',eq:'(A) 11 年 (C) 約 10 萬年 (E) 數億～數十億年',async run(S,a){const L=ANIM.API;
-      for(const r of S.R.filter(r=>!r.ok)){const [e0,e1]=r.real,g=L.g(S.lay);
+      for(const r of S.R.filter(r=>!r.ok)){const [e0,e1]=r.real,g=L.g(S.lay);g.setAttribute('data-bad','1');
         if(e0===e1)L.dot(g,S.X(e0),r.y,L.C.pen(),9);else L.el('rect',{x:S.X(e0),y:r.y-9,width:S.X(e1)-S.X(e0),height:18,rx:9,fill:L.C.pen()},g);
         const xc=S.X(r.claim),xr=S.X((e0+e1)/2);L.line(g,xc+(xr>xc?12:-12),r.y,xr+(xr>xc?-14:14),r.y,L.C.pen(),2,'5 5');
         L.text(g,S.X(r.claim),r.y+30,'✗','hand','middle');
         await L.tween(a?500:0,p=>g.style.opacity=p)}}},
-    {cap:'板塊運動要數百萬年以上，軌道參數週期約數萬到十萬年，這兩個配對正確，選 (B)(D)。',async run(S,a){const L=ANIM.API;
+    {cap:'板塊運動要數百萬年以上，軌道參數週期約數萬到十萬年，這兩個配對正確，選 (B)(D)。（前面：(A)(C)(E) 已排除，淡化）',eq:'(B) 數百萬年以上 (D) 數萬～十萬年 → 選 (B)(D)',async run(S,a){const L=ANIM.API;
+      S.lay.querySelectorAll('[data-bad]').forEach(n=>n.style.opacity=0.2);
       for(const r of S.R.filter(r=>r.ok)){const [e0,e1]=r.real,g=L.g(S.lay);
         L.el('rect',{x:S.X(e0),y:r.y-9,width:S.X(e1)-S.X(e0),height:18,rx:9,fill:L.C.good()},g);
         L.text(g,S.X(e1)+14,r.y+9,'✓','handg','start');
@@ -1742,7 +1754,7 @@ ANIM.add('ES-氣候與環境-006',{W:600,H:540,
     const B={A:{p:[120,90],t:['(A) 海冰減少','反照率降低']},C:{p:[480,90],t:['(C) 水氣增加','水氣是溫室氣體']},
              D:{p:[480,405],t:['(D) 永凍土融化','放出 CO₂、CH₄']},B:{p:[120,405],t:['(B) 長波輻射','增加、地表降溫']},
              E:{p:[300,495],t:['(E) 燒化石燃料','（人類活動）']}};
-    const box=(k,parent)=>{const b=B[k],g=L.g(parent);
+    const box=(k,parent)=>{const b=B[k],g=L.g(parent);g.setAttribute('data-k',k);
       L.el('rect',{x:b.p[0]-92,y:b.p[1]-34,width:184,height:68,rx:12,fill:L.C.paper(),stroke:L.C.ink(),'stroke-width':2},g);
       L.text(g,b.p[0],b.p[1]-6,b.t[0],'lbl','middle');L.text(g,b.p[0],b.p[1]+24,b.t[1],'tick','middle');return g};
     // 彎箭頭：從 p 到 q，往側邊鼓 bulge
@@ -1752,14 +1764,15 @@ ANIM.add('ES-氣候與環境-006',{W:600,H:540,
       const a=Math.atan2(q[1]-cy,q[0]-cx),h=13;L.el('path',{d:`M${q}L${q[0]-h*Math.cos(a-0.45)},${q[1]-h*Math.sin(a-0.45)}L${q[0]-h*Math.cos(a+0.45)},${q[1]-h*Math.sin(a+0.45)}Z`,fill:color},g);
       return{g,mid:[(p[0]+2*cx+q[0])/4,(p[1]+2*cy+q[1])/4]}};
     const edge=(from,to,r)=>{const dx=to[0]-from[0],dy=to[1]-from[1],l=Math.hypot(dx,dy);return[from[0]+dx/l*r,from[1]+dy/l*r]};
-    const loop=(parent,k,backColor,backLabel,outOnly)=>{const b=B[k].p;const g=L.g(parent);
+    const loop=(parent,k,backColor,backLabel,outOnly)=>{const b=B[k].p;const g=L.g(parent);g.setAttribute('data-k',k);
       const ro=Math.abs(b[1]-C[1])>200?44:60;
       if(!outOnly){curve(g,edge(C,b,58),edge(b,C,ro),-28,L.C.soft())}
       const back=curve(g,edge(b,C,ro),edge(C,b,58),-28,backColor);
       const t=L.text(g,back.mid[0],back.mid[1]+8,backLabel,'hand big','middle');t.setAttribute('stroke',L.C.paper());t.setAttribute('stroke-width',6);t.setAttribute('paint-order','stroke');t.style.fill=backColor;
       return g};
     const lay=L.g(svg),boxes=L.g(svg);
-    return{box,loop,lay,boxes,reset(){L.clear(lay);L.clear(boxes)}}},
+    const focus=ks=>svg.querySelectorAll('[data-k]').forEach(n=>n.style.opacity=ks.includes(n.getAttribute('data-k'))?1:0.22);
+    return{box,loop,focus,lay,boxes,reset(){L.clear(lay);L.clear(boxes)}}},
   steps:[
     {cap:'正回饋要同時符合兩件事：由暖化引起，結果又回頭讓暖化加劇，也就是會繞成一圈、越滾越大。',eq:'暖化 → 結果 → 暖化更強',run(S){}},
     {cap:'(A) 暖化讓海冰變少，反照率降低，吸收更多太陽輻射，又更暖。繞成加強的一圈，是正回饋。',async run(S,a){const L=ANIM.API;
@@ -1767,10 +1780,13 @@ ANIM.add('ES-氣候與環境-006',{W:600,H:540,
     {cap:'(C) 暖化使水氣增加，水氣也是溫室氣體；(D) 永凍土融化放出 CO₂ 和甲烷。兩個都是正回饋。',async run(S,a){const L=ANIM.API;
       S.box('C',S.boxes);S.box('D',S.boxes);const g1=S.loop(S.lay,'C',L.C.good(),'＋'),g2=S.loop(S.lay,'D',L.C.good(),'＋');
       await L.tween(a?700:0,p=>{g1.style.opacity=p;g2.style.opacity=p})}},
-    {cap:'(B) 溫度升高，向外的長波輻射增加，地表反而降溫，是抑制變化的負回饋。',async run(S,a){const L=ANIM.API;
-      S.box('B',S.boxes);const g=S.loop(S.lay,'B',L.C.pen(),'－');await L.tween(a?700:0,p=>g.style.opacity=p)}},
-    {cap:'(E) 燒化石燃料是人類造成的外在因素，不是暖化引起的，只有單向箭頭、沒繞成一圈，不算回饋。選 (A)(C)(D)。',async run(S,a){const L=ANIM.API;
-      S.box('E',S.boxes);const g=S.loop(S.lay,'E',L.C.soft(),'',true);await L.tween(a?700:0,p=>g.style.opacity=p)}},
+    {cap:'(B) 溫度升高，向外的長波輻射增加，地表反而降溫，是抑制變化的負回饋。（前面：(A)(C)(D) 是正回饋）',eq:'暖化 → 長波輻射增加 → 降溫（抑制，負回饋）',async run(S,a){const L=ANIM.API;
+      S.focus(['B']);S.box('B',S.boxes);const g=S.loop(S.lay,'B',L.C.pen(),'－');await L.tween(a?700:0,p=>g.style.opacity=p)}},
+    {cap:'(E) 燒化石燃料是人類造成的外在因素，不是暖化引起的，只有單向箭頭、沒繞成一圈，不算回饋。',eq:'燃燒化石燃料 → 暖化（單向，不是回饋）',async run(S,a){const L=ANIM.API;
+      S.focus(['E']);S.box('E',S.boxes);const g=S.loop(S.lay,'E',L.C.soft(),'',true);await L.tween(a?700:0,p=>g.style.opacity=p)}},
+    {cap:'會繞成加強一圈的只有 (A)(C)(D)，選 (A)(C)(D)。',eq:'正回饋：(A) 海冰、(C) 水氣、(D) 永凍土',async run(S,a){const L=ANIM.API;
+      const ks=['A','C','D'];const n=[...S.lay.parentNode.querySelectorAll('[data-k]')];const o=n.map(x=>+x.style.opacity||1);
+      await L.tween(a?600:0,p=>n.forEach((x,i)=>{const t=ks.includes(x.getAttribute('data-k'))?1:0.15;x.style.opacity=o[i]+(t-o[i])*p}))}},
   ]});
 
 ANIM.add('ES-海洋-017',{W:600,H:480,
@@ -1799,7 +1815,8 @@ ANIM.add('ES-海洋-017',{W:600,H:480,
       await L.tween(a?800:0,p=>g.style.opacity=p)}},
     {cap:'丙和丁都是 2 °C，丙的鹽度比較高，所以丙的密度比丁大。',eq:'同溫，鹽度 34.9 > 34.0 → 丙 > 丁',async run(S,a){const L=ANIM.API;
       const g=L.g(S.lay);await L.tween(a?800:0,p=>{L.clear(g);L.arrow(g,S.X(34.0)+12,S.Y(2)-22,L.lerp(S.X(34.0)+12,S.X(34.9)-12,p),S.Y(2)-22,L.C.cta())})}},
-    {cap:'丙又比乙、甲更冷、鹽度更高，所在的等密度線最靠右下，所以丙的密度最大，選 (C)。',async run(S,a){const L=ANIM.API;
+    {cap:'丙又比乙、甲更冷、鹽度更高，所在的等密度線最靠右下，所以丙的密度最大，選 (C)。',eq:'丙：2 °C、34.9 ‰，密度最大 → 選 (C)',async run(S,a){const L=ANIM.API;L.clear(S.lay);
+      [22,23,24,25,26,27,28].forEach(s=>L.el('path',{d:S.iso(s),fill:'none',stroke:L.C.soft(),'stroke-width':1.8,'stroke-dasharray':'6 6'},S.lay));
       const p=L.el('path',{d:S.iso(S.sig(34.9,2)),fill:'none',stroke:L.C.good(),'stroke-width':4},S.lay);
       L.el('circle',{cx:S.X(34.9),cy:S.Y(2),r:16,fill:'none',stroke:L.C.good(),'stroke-width':3.5},S.lay);
       const t=L.text(S.lay,S.X(34.62),S.Y(5.8),'密度最大','handg','middle');t.setAttribute('stroke',L.C.paper());t.setAttribute('stroke-width',6);t.setAttribute('paint-order','stroke');
@@ -1871,13 +1888,13 @@ ANIM.add('ES-海洋-022',{W:600,H:480,
       L.text(v,420,140,'水氣、熱量','hand','start');L.text(v,420,172,'海 → 大氣','hand','start');
       await L.tween(a?900:0,p=>{g.style.opacity=p;v.style.opacity=p});S.vap=v}},
     {cap:'強風把海水攪得很厲害，混合層底下的冷水被翻到表層，表層水溫下降約 2～4 °C，(B) 對。',async run(S,a){const L=ANIM.API;
-      S.vap.style.opacity=.25;S.labs.style.opacity=0;
+      S.vap.style.opacity=0;S.labs.style.opacity=0;
       const g=L.g(S.lay);
       for(const cx of [130,300,470]){const r=36,cy=S.ml+6;L.el('path',{d:`M${cx+r},${cy}A${r},${r} 0 1 1 ${cx},${cy-r}`,fill:'none',stroke:L.C.ink(),'stroke-width':3},g);
         L.arrow(g,cx+6,cy-r-1,cx-4,cy-r,L.C.ink(),3)}
       await L.tween(a?1500:0,p=>S.set(p));
       L.text(g,20,S.th+60,'冷水被翻上來','hand','start');L.text(g,330,S.th+60,'表層降溫 2～4 °C','hand','start')}},
-    {cap:'冷水區維持一兩週，下一個颱風拿不到足夠熱量和水氣，較難增強，(D) 對。走得越慢、攪動越久，降溫越多，(E) 錯。選 (B)(C)(D)。',async run(S,a){const L=ANIM.API;
+    {cap:'冷水區維持一兩週，下一個颱風拿不到足夠熱量和水氣，較難增強，(D) 對。走得越慢、攪動越久，降溫越多，(E) 錯。選 (B)(C)(D)。',eq:'(B)(C)(D) 對，(A)(E) 錯',async run(S,a){const L=ANIM.API;
       L.clear(S.lay);const g=L.g(S.lay);
       L.text(g,300,90,'冷尾流維持 1～2 週','hand big','middle');L.text(g,300,140,'下一個颱風較難增強','hand','middle');L.text(g,300,S.sea+60,'降溫的表層海水','lbl','middle');
       await L.tween(a?700:0,p=>g.style.opacity=p)}},
@@ -1937,7 +1954,7 @@ ANIM.add('MA-三角函數-018',{W:580,H:520,
   init(svg,L){const P=L.plane(svg,{x0:-1.75,x1:1.75,y0:-1.45,y1:1.45,W:580,H:520,grid:false});
     L.el('circle',{cx:P.X(0),cy:P.Y(0),r:P.s,fill:'none',stroke:L.C.ink(),'stroke-width':2},svg);
     [['Ⅰ',0.75,0.75],['Ⅱ',-0.75,0.75],['Ⅲ',-0.75,-0.75],['Ⅳ',0.75,-0.75]].forEach(([t,x,y])=>L.text(svg,P.X(x*1.75),P.Y(y*1.75)+8,t,'lbl','middle'));
-    const lay=L.g(svg);
+    const lay=L.g(svg),part=L.g(svg);
     /* 從角度 0 畫到 t（弧度），半徑 r（單位長） */
     const arcD=(r,t)=>{const R=r*P.s,x0=P.X(0)+R,y0=P.Y(0),x1=P.X(0)+R*Math.cos(t),y1=P.Y(0)-R*Math.sin(t);
       return `M${x0},${y0}A${R},${R} 0 ${t>Math.PI?1:0} 0 ${x1},${y1}`};
@@ -1945,7 +1962,7 @@ ANIM.add('MA-三角函數-018',{W:580,H:520,
       L.el('path',{d:arcD(r,t),fill:'none',stroke:col,'stroke-width':2.5},g);
       L.line(g,P.X(0),P.Y(0),P.X(Math.cos(t)),P.Y(Math.sin(t)),col,3);L.dot(g,P.X(Math.cos(t)),P.Y(Math.sin(t)),col,7);return g};
     const th=Math.atan2(3,-4);
-    return{P,lay,ray,th,reset(){L.clear(lay)}}},
+    return{P,lay,part,ray,th,reset(){L.clear(lay);L.clear(part)}}},
   steps:[
     {cap:'θ 在第二象限、sin θ = 3/5，畫在單位圓上：點的 y 坐標是 3/5，x 坐標要取負，cos θ = −4/5。',eq:'cos θ = −√(1 − 9/25) = −4/5',async run(S,a){const L=ANIM.API;const P=S.P;
       const g=L.g(S.lay);await L.tween(a?1000:0,p=>{L.clear(g);S.ray(g,S.th*p,L.C.good(),0.22)});
@@ -1953,16 +1970,16 @@ ANIM.add('MA-三角函數-018',{W:580,H:520,
       L.text(S.lay,P.X(-0.8)-6,P.Y(0.6)-14,'(−4/5, 3/5)','lbl','end');
       L.text(S.lay,P.X(-0.15),P.Y(0.3),'θ','handg','middle')}},
     {cap:'轉到 2θ：cos 2θ = 7/25 > 0、sin 2θ = −24/25 < 0，所以 2θ 在第四象限。(1) 對，(3)(4) 錯。',eq:'cos 2θ = 1 − 2sin²θ = 7/25，sin 2θ = 2sin θ cos θ = −24/25',async run(S,a){const L=ANIM.API;const P=S.P;
-      const g=L.g(S.lay);await L.tween(a?1500:0,p=>{L.clear(g);S.ray(g,2*S.th*p,L.C.cta(),0.36)});
-      const c=7/25,s=-24/25;L.line(S.lay,P.X(c),P.Y(s),P.X(c),P.Y(0),L.C.soft(),2,'6 5');
-      L.text(S.lay,P.X(c)+14,P.Y(s)+6,'(7/25, −24/25)','lbl','start');
-      L.text(S.lay,P.X(-0.4),P.Y(-0.4),'2θ','hand','middle')}},
-    {cap:'再看 θ/2：θ 在 π/2 到 π，θ/2 就在 π/4 到 π/2，是第一象限，cos(θ/2) 是正的 1/√10，(5) 錯。',eq:'cos(θ/2) = √((1 + cos θ)/2) = 1/√10',async run(S,a){const L=ANIM.API;const P=S.P;
-      const g=L.g(S.lay);await L.tween(a?900:0,p=>{L.clear(g);S.ray(g,S.th/2*p,L.C.mid(),0.5)});
-      const c=1/Math.sqrt(10),s=3/Math.sqrt(10);L.line(S.lay,P.X(c),P.Y(s),P.X(c),P.Y(0),L.C.soft(),2,'6 5');
-      L.text(S.lay,P.X(c)+14,P.Y(s)-2,'(1/√10, 3/√10)','lbl','start');
-      L.text(S.lay,P.X(0.47),P.Y(0.62),'θ/2','hand','start')}},
-    {cap:'tan(θ/2) = sin θ ÷ (1 + cos θ) = (3/5) ÷ (1/5) = 3，(2) 對。答案選 (1)(2)。',eq:'tan(θ/2) = (3/5) ÷ (1/5) = 3',run(S){}},
+      const g=L.g(S.part);await L.tween(a?1500:0,p=>{L.clear(g);S.ray(g,2*S.th*p,L.C.cta(),0.36)});
+      const c=7/25,s=-24/25;L.line(S.part,P.X(c),P.Y(s),P.X(c),P.Y(0),L.C.soft(),2,'6 5');
+      L.text(S.part,P.X(c)+14,P.Y(s)+6,'(7/25, −24/25)','lbl','start');
+      L.text(S.part,P.X(-0.4),P.Y(-0.4),'2θ','hand','middle')}},
+    {cap:'再看 θ/2：θ 在 π/2 到 π，θ/2 就在 π/4 到 π/2，是第一象限，cos(θ/2) 是正的 1/√10，(5) 錯。',eq:'cos(θ/2) = √((1 + cos θ)/2) = 1/√10',async run(S,a){const L=ANIM.API;const P=S.P;L.clear(S.part);
+      const g=L.g(S.part);await L.tween(a?900:0,p=>{L.clear(g);S.ray(g,S.th/2*p,L.C.mid(),0.5)});
+      const c=1/Math.sqrt(10),s=3/Math.sqrt(10);L.line(S.part,P.X(c),P.Y(s),P.X(c),P.Y(0),L.C.soft(),2,'6 5');
+      L.text(S.part,P.X(c)+14,P.Y(s)-2,'(1/√10, 3/√10)','lbl','start');
+      L.text(S.part,P.X(0.47),P.Y(0.62),'θ/2','hand','start')}},
+    {cap:'tan(θ/2) = sin θ ÷ (1 + cos θ) = (3/5) ÷ (1/5) = 3，(2) 對。答案選 (1)(2)。',eq:'tan(θ/2) = (3/5) ÷ (1/5) = 3',run(S){const L=ANIM.API;const P=S.P;L.text(S.part,P.X(0.05),P.Y(-0.45),'tan(θ/2) = 3','hand','start');L.text(S.part,P.X(0.05),P.Y(-0.45)+36,'選 (1)(2)','handg','start')}},
   ]});
 
 ANIM.add('MA-三角函數-021',{W:600,H:460,
@@ -2010,7 +2027,7 @@ ANIM.add('MA-三角函數-024',{W:600,H:520,
       L.el('path',{d:`M${ex+r*Math.cos(b)},${ey-r*Math.sin(b)}A${r},${r} 0 0 0 ${ex+r*Math.cos(a)},${ey-r*Math.sin(a)}`,fill:'none',stroke:L.C.cta(),'stroke-width':4},dyn);
       const m=(a+b)/2;L.text(dyn,ex+(r+12)*Math.cos(m),ey-(r+12)*Math.sin(m)+8,'θ','hand','start');
       if(showAB){const r2=34;L.el('path',{d:`M${ex+r2},${ey}A${r2},${r2} 0 0 0 ${ex+r2*Math.cos(b)},${ey-r2*Math.sin(b)}`,fill:'none',stroke:L.C.mid(),'stroke-width':3},dyn);
-        const tb=L.text(dyn,ex+r2+6,ey-4,'β','hand','start');tb.style.fill=L.C.mid();
+        const tb=L.text(dyn,ex+r2+2,ey+24,'β','hand','start');tb.style.fill=L.C.mid();
         const r3=118;L.el('path',{d:`M${ex+r3},${ey}A${r3},${r3} 0 0 0 ${ex+r3*Math.cos(a)},${ey-r3*Math.sin(a)}`,fill:'none',stroke:L.C.mid(),'stroke-width':3,'stroke-dasharray':'5 4'},dyn);
         const ta=L.text(dyn,ex+(r3+8)*Math.cos(a*0.1),ey-(r3+8)*Math.sin(a*0.1)+2,'α','hand','start');ta.style.fill=L.C.mid()}
       L.dot(dyn,ex,ey,L.C.ink(),8);L.text(dyn,ex,ey+32,'眼','lbl','middle');
@@ -2093,7 +2110,12 @@ ANIM.add('MA-三角比-015',{W:560,H:540,
     const tri=L.poly(svg,[Q(A),Q(B),Q(C)],{fill:'none',stroke:L.C.good(),'stroke-width':3.5,'stroke-linejoin':'round'});
     [[A,'A(1, 1)',12,30,'start'],[B,'B(7, 3)',12,24,'start'],[C,'C(3, 7)',-12,-8,'end']].forEach(([p,t,dx,dy,an])=>{L.dot(svg,P.X(p[0]),P.Y(p[1]),L.C.good(),7);L.text(svg,P.X(p[0])+dx,P.Y(p[1])+dy,t,'lbl',an)});
     const top=L.g(svg);
-    return{P,Q,A,B,C,lay,top,tri,reset(){L.clear(lay);L.clear(top);tri.setAttribute('fill','none')}}},
+    /* 三邊長標籤（hl：要不要把 BC 標橘） */
+    const sides=(hl)=>{[[A,B,'√40',0,32],[A,C,'√40',-34,0],[B,C,'√32',28,10]].forEach(([p,q,t,dx,dy])=>L.text(top,(P.X(p[0])+P.X(q[0]))/2+dx,(P.Y(p[1])+P.Y(q[1]))/2+dy,t,'hand','middle'));
+      if(hl)L.line(top,P.X(B[0]),P.Y(B[1]),P.X(C[0]),P.Y(C[1]),L.C.cta(),5)};
+    const arcA=()=>{const r=0.9,t0=Math.atan2(2,6),t1=Math.atan2(6,2);
+      L.el('path',{d:`M${P.X(1+r*Math.cos(t0))},${P.Y(1+r*Math.sin(t0))}A${r*P.s},${r*P.s} 0 0 0 ${P.X(1+r*Math.cos(t1))},${P.Y(1+r*Math.sin(t1))}`,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},top)};
+    return{P,Q,A,B,C,lay,top,tri,sides,arcA,reset(){L.clear(lay);L.clear(top);tri.setAttribute('fill','none')}}},
   steps:[
     {cap:'先把 A(1, 1)、B(7, 3)、C(3, 7) 描出來連成三角形。',run(S){}},
     {cap:'算三邊平方：AB² = 40、AC² = 40、BC² = 32。BC 最短，它對的 ∠A 是最小角，(1) 錯。',eq:'AB² = 6² + 2² = 40，AC² = 2² + 6² = 40，BC² = 4² + 4² = 32',async run(S,a){const L=ANIM.API;const P=S.P;
@@ -2101,16 +2123,17 @@ ANIM.add('MA-三角比-015',{W:560,H:540,
       for(const [p,q,t,dx,dy] of sides){L.text(S.top,(P.X(p[0])+P.X(q[0]))/2+dx,(P.Y(p[1])+P.Y(q[1]))/2+dy,t,'hand','middle');if(a)await L.wait(300)}
       L.line(S.top,P.X(S.B[0]),P.Y(S.B[1]),P.X(S.C[0]),P.Y(S.C[1]),L.C.cta(),5)}},
     {cap:'cos A = (40 + 40 − 32) ÷ 80 = 3/5，所以 sin A = 4/5，(2) 錯。面積 = ½ × √40 × √40 × 4/5 = 16，(3) 對。',eq:'cos A = 3/5，sin A = 4/5，面積 = ½ · 40 · 4/5 = 16',async run(S,a){const L=ANIM.API;const P=S.P;
-      const r=0.9,t0=Math.atan2(2,6),t1=Math.atan2(6,2);
-      L.el('path',{d:`M${P.X(1+r*Math.cos(t0))},${P.Y(1+r*Math.sin(t0))}A${r*P.s},${r*P.s} 0 0 0 ${P.X(1+r*Math.cos(t1))},${P.Y(1+r*Math.sin(t1))}`,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},S.top);
+      S.arcA();
       await L.tween(a?700:0,p=>{S.tri.setAttribute('fill',L.C.good());S.tri.setAttribute('fill-opacity',0.18*p)});
       L.text(S.top,P.X(3.7),P.Y(3.9),'16','hand big','middle')}},
     {cap:'畫出外接圓：2R = BC ÷ sin A = 4√2 ÷ (4/5) = 5√2，所以 R = 5√2/2，不是 5√2，(4) 錯。',eq:'2R = 4√2 ÷ (4/5) = 5√2，R = 5√2/2',async run(S,a){const L=ANIM.API;const P=S.P;
+      L.clear(S.top);S.tri.setAttribute('fill','none');S.sides(true);S.arcA();
       const R=5*Math.SQRT2/2,cx=P.X(3.5),cy=P.Y(3.5);const c=L.el('path',{fill:'none',stroke:L.C.soft(),'stroke-width':2.5,'stroke-dasharray':'8 6'},S.lay);
       await L.tween(a?1200:0,p=>{const e=Math.max(0.001,p)*2*Math.PI-0.0001;const pts=[];for(let k=0;k<=80;k++){const t=-Math.PI*3/4+e*k/80;pts.push((k?'L':'M')+(cx+R*P.s*Math.cos(t)).toFixed(1)+','+(cy-R*P.s*Math.sin(t)).toFixed(1))}c.setAttribute('d',pts.join(''))});
       L.dot(S.lay,cx,cy,L.C.soft(),5);L.line(S.lay,cx,cy,P.X(1),P.Y(1),L.C.soft(),2);
-      L.text(S.top,P.X(1.6),P.Y(2.6),'R','hand','middle')}},
+      L.text(S.top,P.X(2.0),P.Y(2.7),'R','hand','middle')}},
     {cap:'看 ∠B：cos B = 32 ÷ (2√40 √32) = 1/√5，sin B = 2/√5，tan B = 2，(5) 對。答案選 (3)(5)。',eq:'tan B = (2/√5) ÷ (1/√5) = 2',async run(S,a){const L=ANIM.API;const P=S.P;
+      L.clear(S.lay);L.clear(S.top);S.sides(false);
       const r=0.9,t0=Math.atan2(-2,-6),t1=Math.atan2(4,-4);
       const arc=L.el('path',{d:`M${P.X(7+r*Math.cos(t1))},${P.Y(3+r*Math.sin(t1))}A${r*P.s},${r*P.s} 0 0 0 ${P.X(7+r*Math.cos(t0))},${P.Y(3+r*Math.sin(t0))}`,fill:'none',stroke:L.C.cta(),'stroke-width':3.5},S.top);
       await L.tween(a?600:0,p=>arc.setAttribute('stroke-width',3.5+4*Math.sin(Math.PI*p)));
@@ -2180,6 +2203,7 @@ ANIM.add('MA-三角比-025',{W:600,H:460,
       L.text(S.top,P.X(3.95),P.Y(1.2),'97.2°','hand','end');
       const x=P.X(4)-34,y=P.Y(0)+60,r=11;L.line(S.top,x-r,y-r,x+r,y+r,L.C.pen(),3.5);L.line(S.top,x-r,y+r,x+r,y-r,L.C.pen(),3.5)}},
     {cap:'試 BC = 5：三邊 4、5、6，cos B = 1/8 = 2(3/4)² − 1 = cos 2γ，∠B = 2γ 成立。答案 BC = 5。',eq:'cos B = (16 + 25 − 36)/40 = 1/8 = cos 2γ',async run(S,a){const L=ANIM.API;const P=S.P;
+      L.clear(S.top);
       const g=L.g(S.top);await L.tween(a?600:0,p=>{L.clear(g);L.line(g,P.X(S.A[0]),P.Y(S.A[1]),P.X(L.lerp(S.A[0],5,p)),P.Y(S.A[1]*(1-p)),L.C.good(),4.5)});
       L.line(S.top,P.X(0),P.Y(0),P.X(5),P.Y(0),L.C.good(),4.5);
       S.angB(S.top,5,L.C.good());L.text(S.top,P.X(5.5),P.Y(0.85),'2γ','handg','start');
@@ -2266,12 +2290,12 @@ ANIM.add('MA-多項式函數-012',{W:580,H:560,
       const x=P.X(2),y=P.Y(-28/S.U),r=10;L.line(S.top,x-r,y-r,x+r,y+r,L.C.pen(),3.5);L.line(S.top,x-r,y+r,x+r,y-r,L.C.pen(),3.5);
       L.text(S.top,x+16,y+8,'(2, k) 不在圖上','hand','start');S.read.textContent='k = −28'}},
     {cap:'2(x − 2)³ 和 6(x − 2) 都是遞增，加起來 f 一路往上爬。不管 k 多少，圖形只是上下平移，和 x 軸恰交一點，(2) 對。',async run(S,a){const L=ANIM.API;
-      const ks=[-28,-8,-48,-28];if(!a){S.set(-28);S.read.textContent='k = −28';return}
+      L.clear(S.top);const ks=[-28,-8,-48,-28];if(!a){S.set(-28);S.read.textContent='k = −28';return}
       for(let i=0;i<3;i++){const k0=ks[i],k1=ks[i+1];await L.tween(700,p=>{const k=L.lerp(k0,k1,p);S.set(k);S.read.textContent='k = '+Math.round(k).toString().replace('-','−')})}}},
     {cap:'若 k > 0（例如 k = 10）：f(0) = k > 0，而 f 遞增，要往左走才會降到 0，所以根是負的，(3) 錯。',eq:'f(0) = k > 0，f 遞增  ⇒  根 < 0',async run(S,a){const L=ANIM.API;const P=S.P;
       L.clear(S.top);await L.tween(a?900:0,p=>{const k=L.lerp(-28,10,p);S.set(k);S.read.textContent='k = '+Math.round(k).toString().replace('-','−')});
       L.dot(S.lines,P.X(0),P.Y(10/S.U),L.C.cta(),7);L.text(S.lines,P.X(0)+12,P.Y(10/S.U)+4,'(0, k)','lbl','start');
-      L.dot(S.lines,P.X(-0.2964),P.Y(0),L.C.pen(),7);L.text(S.lines,P.X(-0.2964)-4,P.Y(0)+32,'根','hand','end')}},
+      L.dot(S.lines,P.X(-0.2964),P.Y(0),L.C.pen(),7);L.text(S.lines,P.X(-0.2964)-10,P.Y(0)-12,'根','hand','end')}},
     {cap:'f(x) − 10x = 2(x − 2)³ − 4(x − 2) + (k + 8)，一次項變負的。取 m = k + 8，直線和圖形交在 x = 2、2 ± √2 三點，(4) 錯。',eq:'2(x − 2)³ − 4(x − 2) = 0  ⇒  x = 2, 2 ± √2',async run(S,a){const L=ANIM.API;const P=S.P;
       L.clear(S.lines);L.clear(S.top);S.set(-28);S.read.textContent='k = −28，m = −20';
       const g=L.g(S.lines);const ln=x=>(10*x-20)/S.U;
@@ -2294,7 +2318,8 @@ ANIM.add('MA-多項式函數-013',{W:560,H:580,
     const cur=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3.5},svg);
     const top=L.g(svg);
     L.dot(top,P.X(1),P.Y(3),L.C.ink(),8);L.dot(top,P.X(-1),P.Y(-1),L.C.ink(),8);
-    L.text(top,P.X(1)+14,P.Y(3)+26,'(1, 3)','lbl','start');L.text(top,P.X(-1)+14,P.Y(-1)+26,'(−1, −1)','lbl','start');
+    const halo=t=>{t.setAttribute('paint-order','stroke');t.setAttribute('stroke',L.C.paper());t.setAttribute('stroke-width',6);t.setAttribute('stroke-linejoin','round')};
+    halo(L.text(top,P.X(1)-12,P.Y(3)-14,'(1, 3)','lbl','end'));halo(L.text(top,P.X(-1)-14,P.Y(-1)+8,'(−1, −1)','lbl','end'));
     const marks=L.g(svg);
     const read=L.text(svg,P.X(-4.1),P.Y(4.55),'','hand','start');
     const set=a=>{cur.setAttribute('d',P.fpath(x=>f(x,a),-4.2,3.6,240));read.textContent='a = '+(Math.round(a*100)/100).toString().replace('-','−')};
@@ -2305,7 +2330,7 @@ ANIM.add('MA-多項式函數-013',{W:560,H:580,
     {cap:'f(0) = c = 1 會讓 a = 0，變成直線 y = 2x + 1，不是二次，(1) 錯。這條直線剛好就是除以 x² − 1 的餘式 2x + 1，(4) 對。',eq:'f(x) = (x² − 1)Q(x) + (2x + 1)',async run(S,a){const L=ANIM.API;const P=S.P;
       const g=L.g(S.lay);await L.tween(a?900:0,p=>{L.clear(g);const xa=-3.5,xb=L.lerp(-3.5,2,p);L.line(g,P.X(xa),P.Y(2*xa+1),P.X(xb),P.Y(2*xb+1),L.C.cta(),3)});
       L.text(S.lay,P.X(0.9),P.Y(-1.9),'y = 2x + 1','lbl','start').style.fill=L.C.cta()}},
-    {cap:'f(−1) < 0 < f(1)，曲線要從 x 軸下面爬到上面，在 −1 和 1 之間一定穿過 x 軸，(3) 對。',eq:'勘根定理：f(−1)·f(1) < 0',async run(S,a){const L=ANIM.API;const P=S.P;
+    {cap:'f(−1) < 0 < f(1)，曲線要從 x 軸下面爬到上面，在 −1 和 1 之間一定穿過 x 軸，(3) 對。',eq:'勘根定理：f(−1)·f(1) < 0',async run(S,a){const L=ANIM.API;const P=S.P;L.clear(S.lay);
       L.el('rect',{x:P.X(-1),y:P.Y(0)-6,width:P.X(1)-P.X(-1),height:12,fill:L.C.cta(),opacity:0.45,rx:6},S.marks);
       if(a){await L.tween(1100,p=>S.set(L.lerp(2,-0.6,p)));await L.tween(1100,p=>S.set(L.lerp(-0.6,2,p)))}else S.set(2)}},
     {cap:'(2) 取 a = 1/2：頂點 x 坐標 = −1/a = −2，比 −1 還小，(2) 錯。',eq:'頂點 x = −b/(2a) = −1/a = −2',async run(S,a){const L=ANIM.API;const P=S.P;L.clear(S.fam);L.clear(S.lay);L.clear(S.marks);
@@ -2329,6 +2354,7 @@ ANIM.add('MA-多項式函數-015',{W:560,H:600,
     const cur=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3.5},svg);
     const gm=L.g(svg);
     const read=L.text(svg,P.X(4.7),P.Y(4.0),'','hand big','end');
+    read.setAttribute('paint-order','stroke');read.setAttribute('stroke',L.C.paper());read.setAttribute('stroke-width',7);read.setAttribute('stroke-linejoin','round');
     const set=r=>{cur.setAttribute('d',P.fpath(x=>f(x,r)/U,-1.8,4.8,300));read.textContent='r = '+(Math.round(r*10)/10).toString().replace('-','−')};
     return{P,U,q,f,qp,lay,cur,gm,read,set,reset(){qp.setAttribute('d','');qp.style.opacity='';L.clear(lay);L.clear(gm);cur.setAttribute('d','');cur.style.opacity='';read.textContent=''}}},
   steps:[
@@ -2520,7 +2546,7 @@ ANIM.add('MA-指數與對數函數-006',{W:480,H:600,
     return{P,f,r,under,lay,reset(){L.clear(under);L.clear(lay)}}},
   steps:[
     {cap:'令 u = x² − 4x，先把 u 的圖畫出來。題目就是要 log 以 1/3 為底的 u 大於 −2。',eq:'u = x² − 4x',run(S){const L=ANIM.API,P=S.P;
-      L.text(S.lay,P.X(6.4),P.Y(9.6),'u = x² − 4x','lbl','end')}},
+      L.text(S.lay,P.X(6.4),P.Y(-3.6),'u = x² − 4x','lbl','end')}},
     {cap:'真數要大於 0：u > 0，只有 x < 0 或 x > 4 這兩段可以用。',eq:'x² − 4x > 0 ⇒ x < 0 或 x > 4',async run(S,a){const L=ANIM.API,P=S.P;
       const p1=L.el('path',{d:'',fill:'none',stroke:L.C.good(),'stroke-width':5},S.lay),p2=L.el('path',{d:'',fill:'none',stroke:L.C.good(),'stroke-width':5},S.lay);
       await L.tween(a?900:0,p=>{p1.setAttribute('d',P.fpath(S.f,0-2.6*p,0));p2.setAttribute('d',P.fpath(S.f,4,4+2.6*p))});
@@ -2577,7 +2603,7 @@ ANIM.add('MA-指數與對數函數-025',{W:600,H:440,
       S.G1.style.display='none';S.G2.style.display='';const t=1/Math.SQRT2;
       L.line(S.lay2,S.X(t),S.Y(2),S.X(t),S.Y(2*Math.SQRT2),L.C.soft(),2,'4 4');
       L.dot(S.lay2,S.X(t),S.Y(2*Math.SQRT2),L.C.good(),8);L.text(S.lay2,S.X(t)+12,S.Y(2*Math.SQRT2)+30,'最小 2√2','handg')}},
-    {cap:'紅色 a + 2/a 的等號要 a = √2，不在範圍內，在 0 < a < 1 一路遞減，大於 3 卻取不到最小，(3) 錯。',eq:'a + 2/a 等號在 a = √2 > 1，取不到',run(S){const L=ANIM.API,t=Math.SQRT2;
+    {cap:'紅色 a + 2/a 的等號要 a = √2，不在範圍內，在 0 < a < 1 一路遞減，大於 3 卻取不到最小，(3) 錯。',eq:'a + 2/a 等號在 a = √2 > 1，取不到',run(S){const L=ANIM.API,t=Math.SQRT2;L.clear(S.lay2);
       L.el('circle',{cx:S.X(t),cy:S.Y(2*Math.SQRT2),r:7,fill:L.C.paper(),stroke:L.C.pen(),'stroke-width':3},S.lay2);
       L.text(S.lay2,S.X(t),S.Y(2*Math.SQRT2)-16,'a = √2','hand','middle');
       L.el('circle',{cx:S.X(1),cy:S.Y(3),r:7,fill:L.C.paper(),stroke:L.C.pen(),'stroke-width':3},S.lay2);
@@ -2774,7 +2800,7 @@ ANIM.add('MA-數據分析-004',{W:560,H:560,
     {cap:'先把六個點畫出來，平均數是 (3, 3)。點大致沿著 y = x 的方向排開。',eq:'x̄ = 3，ȳ = 3',run(S){const L=ANIM.API,P=S.P;
       L.line(S.guide,P.X(-0.5),P.Y(-0.5),P.X(6.5),P.Y(6.5),L.C.soft(),2,'6 6');
       L.el('circle',{cx:P.X(3),cy:P.Y(3),r:12,fill:'none',stroke:L.C.cta(),'stroke-width':3},S.marks);
-      L.text(S.marks,P.X(3),P.Y(4.3),'平均 (3, 3)','hand','middle');L.arrow(S.marks,P.X(3),P.Y(4.1),P.X(3),P.Y(3)-15,L.C.cta(),2.5)}},
+      const ml=L.g(S.marks);S.ml=ml;L.text(ml,P.X(3),P.Y(4.3),'平均 (3, 3)','hand','middle');L.arrow(ml,P.X(3),P.Y(4.1),P.X(3),P.Y(3)-15,L.C.cta(),2.5)}},
     {cap:'(x + y)/√2 是把點投影到 y = x 這條線上。投影後點散得很開，分散度大。',eq:'(4)：6σ² = (10 + 10 + 16) ÷ 2 = 18',async run(S,a){const L=ANIM.API,P=S.P;
       L.line(S.guide,P.X(-0.5),P.Y(-0.5),P.X(6.5),P.Y(6.5),L.C.good(),3);
       const ds=S.pts.map(([x,y])=>{const t=((x-3)+(y-3))/2;return{x,y,fx:3+t,fy:3+t,d:L.dot(S.proj,P.X(x),P.Y(y),L.C.good(),7)}});
@@ -2782,7 +2808,7 @@ ANIM.add('MA-數據分析-004',{W:560,H:560,
       await L.tween(a?1200:0,p=>ds.forEach(o=>{o.d.setAttribute('cx',P.X(L.lerp(o.x,o.fx,p)));o.d.setAttribute('cy',P.Y(L.lerp(o.y,o.fy,p)))}));
       L.text(S.marks,P.X(5.2),P.Y(5.9),'散很開','handg','middle')}},
     {cap:'(x − y)/√2 是投影到和 y = x 垂直的方向。x、y 正相關，x − y 互相抵消，點擠在一起。',eq:'(2)：6σ² = (10 + 10 − 16) ÷ 2 = 2',async run(S,a){const L=ANIM.API,P=S.P;
-      S.proj.setAttribute('opacity','0.3');
+      S.proj.setAttribute('opacity','0.3');if(S.ml)L.clear(S.ml);
       L.line(S.guide,P.X(0),P.Y(6),P.X(6),P.Y(0),L.C.cta(),3);
       const grp=L.g(S.marks);
       const ds=S.pts.map(([x,y])=>{const t=((x-3)-(y-3))/2;return{x,y,fx:3+t,fy:3-t,d:L.dot(grp,P.X(x),P.Y(y),L.C.cta(),7)}});
@@ -2814,9 +2840,9 @@ ANIM.add('MA-數據分析-014',{W:600,H:450,
       const r2=L.el('rect',{x:X(60),y:304,height:52,width:0,fill:L.C.cta(),opacity:0.3},S.hl);
       await L.tween(a?900:0,p=>{r1.setAttribute('width',(X(80)-X(55))*p);r2.setAttribute('width',(X(72)-X(60))*p)});
       L.text(S.marks,X(67.5),250,'25','hand','middle');L.text(S.marks,X(66),390,'12','hand','middle')}},
-    {cap:'(1) 盒狀圖看不到平均數，不能比。(3) 只知道比例約 1/4，兩班人數不知道，人數不能比。',eq:'盒狀圖只有五數，沒有平均、沒有人數',run(S){const L=ANIM.API,X=S.X;
-      L.line(S.marks,X(80),226,X(96),226,L.C.cta(),5);L.text(S.marks,X(84.5),256,'約 1/4，人數未知','hand','middle')}},
-    {cap:'(5) 甲班中位數 68，依中位數的意義，至少一半的人不低於 68 分。正確，選 (5)。',eq:'甲班中位數 = 68',async run(S,a){const L=ANIM.API,X=S.X;
+    {cap:'(1) 盒狀圖看不到平均數，不能比。(3) 只知道比例約 1/4，兩班人數不知道，人數不能比。',eq:'盒狀圖只有五數，沒有平均、沒有人數',run(S){const L=ANIM.API,X=S.X;L.clear(S.hl);L.clear(S.marks);
+      L.line(S.marks,X(80),226,X(96),226,L.C.cta(),5);L.text(S.marks,590,258,'約 1/4，人數未知','hand','end')}},
+    {cap:'(5) 甲班中位數 68，依中位數的意義，至少一半的人不低於 68 分。正確，選 (5)。',eq:'甲班中位數 = 68',async run(S,a){const L=ANIM.API,X=S.X;L.clear(S.hl);L.clear(S.marks);
       const r=L.el('rect',{x:X(68),y:156,height:68,width:0,fill:L.C.good(),opacity:0.3},S.hl);
       await L.tween(a?1000:0,p=>r.setAttribute('width',(X(96)-X(68))*p));
       L.text(S.marks,X(82),118,'至少一半 ≥ 68','handg','middle')}},
@@ -2926,21 +2952,21 @@ ANIM.add('MA-數與式-024',{W:560,H:480,
     {cap:'由 x + 2y = 1 得 y = (1 − x)/2，把 1/x + 1/y 當成 x 的函數畫出來（0 < x < 1）。',eq:'1/x + 1/y = 1/x + 2/(1 − x)',async run(S,a){const L=ANIM.API;
       const p=L.el('path',{d:S.d,fill:'none',stroke:L.C.good(),'stroke-width':3.5},S.lay);
       const len=p.getTotalLength();p.setAttribute('stroke-dasharray',len);await L.tween(a?1200:0,t=>p.setAttribute('stroke-dashoffset',len*(1-t)));
-      L.text(S.lay,S.X(0.2),S.Y(8.4),'1/x + 1/y','handg','middle')}},
+      L.text(S.lay,S.X(0.44),S.Y(8.4),'1/x + 1/y','handg','middle')}},
     {cap:'乘上 x + 2y = 1 再展開，用算幾不等式：整條曲線都不會低於 3 + 2√2。',eq:'(1/x + 1/y)(x + 2y) = 3 + 2y/x + x/y ≥ 3 + 2√2',async run(S,a){const L=ANIM.API;const m=3+2*Math.SQRT2;
       const l=L.line(S.lay,S.X(0),S.Y(m),S.X(0),S.Y(m),L.C.cta(),3);
       await L.tween(a?900:0,p=>l.setAttribute('x2',S.X(p)));
       L.text(S.lay,S.X(0.98),S.Y(m)-12,'3 + 2√2','hand','end')}},
     {cap:'等號要 2y/x = x/y，即 x = √2 y，配合 x + 2y = 1 得 x = √2 − 1、y = (2 − √2)/2，都是正數，取得到。',eq:'x = √2 − 1 ≈ 0.41',async run(S,a){const L=ANIM.API;const m=3+2*Math.SQRT2,x0=Math.SQRT2-1;
-      L.line(S.lay,S.X(x0),S.Y(m),S.X(x0),S.Y(5),L.C.soft(),2,'6 5');
+      const g3=L.g(S.lay);S.g3=g3;L.line(g3,S.X(x0),S.Y(m),S.X(x0),S.Y(5),L.C.soft(),2,'6 5');
       const c=L.el('circle',{cx:S.X(x0),cy:S.Y(m),r:0,fill:'none',stroke:L.C.cta(),'stroke-width':3},S.lay);L.dot(S.lay,S.X(x0),S.Y(m),L.C.cta(),6);
       await L.tween(a?600:0,p=>c.setAttribute('r',14*p));
-      L.text(S.lay,S.X(x0)+10,S.Y(5)-12,'x = √2 − 1','hand')}},
-    {cap:'4√2 那條線比曲線還低，碰不到，因為兩次算幾的等號不會同時成立。最小值 3 + 2√2，選 (2)。',eq:'最小值 = 3 + 2√2',async run(S,a){const L=ANIM.API;const v=4*Math.SQRT2;
+      L.text(g3,S.X(x0)+10,S.Y(5)-12,'x = √2 − 1','hand')}},
+    {cap:'4√2 那條線比曲線還低，碰不到，因為兩次算幾的等號不會同時成立。最小值 3 + 2√2，選 (2)。',eq:'最小值 = 3 + 2√2',async run(S,a){const L=ANIM.API;const v=4*Math.SQRT2;if(S.g3)S.g3.remove();
       const l=L.line(S.lay,S.X(0),S.Y(v),S.X(0),S.Y(v),L.C.pen(),2.5,'8 6');
       await L.tween(a?800:0,p=>l.setAttribute('x2',S.X(p)));
-      L.text(S.lay,S.X(0.98),S.Y(v)+28,'4√2 取不到','hand','end');
-      L.text(S.lay,S.X(0.62),S.Y(8.5),'選 (2)','hand big','middle')}},
+      L.text(S.lay,S.X(0.98),S.Y(v)+34,'4√2 取不到','hand','end');
+      L.text(S.lay,S.X(0.88),S.Y(7.3),'選 (2)','hand big','middle')}},
   ]});
 
 ANIM.add('MA-機率-001',{W:560,H:540,
@@ -3020,7 +3046,7 @@ ANIM.add('MA-機率-012',{W:560,H:540,
 
 ANIM.add('MA-直線與圓-001',{W:540,H:540,
   init(svg,L){const P=L.plane(svg,{x0:-5,x1:5,y0:-5,y1:5,W:540,H:540});
-    const q=[['第一象限',2.6,3.6],['第二象限',-2.6,3.6],['第三象限',-2.6,-3.4],['第四象限',2.6,-3.4]];
+    const q=[['第一象限',2.6,3.6],['第二象限',-3.4,3.6],['第三象限',-2.6,-3.4],['第四象限',2.6,-3.4]];
     const shade=L.el('rect',{x:P.X(-5),y:P.Y(0),width:P.X(0)-P.X(-5),height:P.Y(-5)-P.Y(0),fill:L.C.pen(),opacity:0},svg);
     const qt=q.map(([s,x,y])=>L.text(svg,P.X(x),P.Y(y),s,'lbl','middle'));
     const ln=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3.5},svg);
@@ -3034,7 +3060,7 @@ ANIM.add('MA-直線與圓-001',{W:540,H:540,
     {cap:'所以直線從 y 軸正半邊穿過，往右下斜。不管斜得多陡或多平，樣子都一樣。',async run(S,a){const L=ANIM.API;
       if(a){await L.tween(900,p=>S.setM(L.lerp(-0.3,-4,p)));await L.tween(700,p=>S.setM(L.lerp(-4,-1,p)))}else S.setM(-1);
       L.text(S.marks,S.P.X(-2.6),S.P.Y(1.4),'斜率 < 0','hand','middle')}},
-    {cap:'這種直線會經過第一、二、四象限，左下的第三象限碰不到。答案選 (3)。',async run(S,a){const L=ANIM.API;S.setM(-1);
+    {cap:'這種直線會經過第一、二、四象限，左下的第三象限碰不到。答案選 (3)。',eq:'經過第一、二、四象限，不經過第三象限',async run(S,a){const L=ANIM.API;S.setM(-1);
       S.qt[2].setAttribute('class','hand big');
       await L.tween(a?700:0,p=>S.shade.setAttribute('opacity',0.15*p))}},
   ]});
@@ -3042,23 +3068,23 @@ ANIM.add('MA-直線與圓-001',{W:540,H:540,
 ANIM.add('MA-直線與圓-002',{W:520,H:620,
   init(svg,L){const P=L.plane(svg,{x0:-5,x1:7,y0:-6,y1:10,W:520,H:620,step:1,labels:2});
     const ln=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3},svg);
-    const marks=L.g(svg),pts=L.g(svg);
+    const marks=L.g(svg),m2=L.g(svg),pts=L.g(svg);
     L.dot(pts,P.X(1),P.Y(2),L.C.ink(),7);L.text(pts,P.X(1)+12,P.Y(2)+24,'A(1, 2)','lbl');
     L.dot(pts,P.X(4),P.Y(8),L.C.ink(),7);L.text(pts,P.X(4)+12,P.Y(8)+6,'B(4, 8)','lbl');
     const cl=L.el('line',{x1:P.X(-5),x2:P.X(7),y1:P.Y(-4),y2:P.Y(-4),stroke:L.C.soft(),'stroke-width':2,'stroke-dasharray':'6 6'},svg);
     const ct=L.text(svg,P.X(4.5),P.Y(-4)-10,'C 在 y = −4 上','hand','middle');
-    return{P,ln,marks,reset(){ln.setAttribute('d','');L.clear(marks)}}},
+    return{P,ln,marks,m2,reset(){ln.setAttribute('d','');L.clear(marks);L.clear(m2)}}},
   steps:[
     {cap:'先描出 A、B 兩點。C 的 y 坐標是 −4，所以 C 在虛線 y = −4 上某處。',run(){}},
     {cap:'從 A 走到 B：往右 3、往上 6，斜率 = 6 ÷ 3 = 2。',eq:'AB 斜率 = (8 − 2) ÷ (4 − 1) = 2',async run(S,a){const L=ANIM.API,P=S.P;
-      const h=L.g(S.marks),v=L.g(S.marks);
+      const h=L.g(S.m2),v=L.g(S.m2);
       await L.tween(a?700:0,p=>{L.clear(h);L.line(h,P.X(1),P.Y(2),P.X(L.lerp(1,4,p)),P.Y(2),L.C.cta(),3)});
-      L.text(S.marks,P.X(2.6),P.Y(2)-10,'右 3','hand','middle');
+      L.text(S.m2,P.X(2.6),P.Y(2)-10,'右 3','hand','middle');
       await L.tween(a?700:0,p=>{L.clear(v);L.line(v,P.X(4),P.Y(2),P.X(4),P.Y(L.lerp(2,8,p)),L.C.cta(),3)});
-      L.text(S.marks,P.X(4)+12,P.Y(5),'上 6','hand')}},
-    {cap:'共線就是同一條直線，斜率都是 2。把直線往左下延長，碰到 y = −4。',async run(S,a){const L=ANIM.API,P=S.P;
+      L.text(S.m2,P.X(4)+12,P.Y(5),'上 6','hand')}},
+    {cap:'共線就是同一條直線，斜率都是 2。把直線往左下延長，碰到 y = −4。',eq:'過 A、斜率 2：y − 2 = 2(x − 1)',async run(S,a){const L=ANIM.API,P=S.P;
       await L.tween(a?1100:0,p=>S.ln.setAttribute('d',P.fpath(x=>2*x,L.lerp(4.5,-2.5,p),4.5)))}},
-    {cap:'從 A 往下走 6，斜率 2 就要往左走 3，到 C(−2, −4)。k = −2，選 (2)。',eq:'(−4 − 2) ÷ (k − 1) = 2 → k − 1 = −3 → k = −2',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'從 A 往下走 6，斜率 2 就要往左走 3，到 C(−2, −4)。k = −2，選 (2)。',eq:'(−4 − 2) ÷ (k − 1) = 2 → k − 1 = −3 → k = −2',async run(S,a){const L=ANIM.API,P=S.P;L.clear(S.m2);
       L.line(S.marks,P.X(1),P.Y(2),P.X(1),P.Y(-4),L.C.cta(),3,'7 6');L.text(S.marks,P.X(1)+12,P.Y(-1),'下 6','hand');
       L.line(S.marks,P.X(1),P.Y(-4),P.X(-2),P.Y(-4),L.C.cta(),3,'7 6');L.text(S.marks,P.X(-0.5),P.Y(-4)+32,'左 3','hand','middle');
       const d=L.dot(S.marks,P.X(-2),P.Y(-4),L.C.pen(),0);
@@ -3079,7 +3105,7 @@ ANIM.add('MA-直線與圓-003',{W:540,H:540,
     {cap:'距離 P 剛好 2 的直線，會和以 P 為圓心、半徑 2 的圓相切。',async run(S,a){const L=ANIM.API;
       await L.tween(a?800:0,p=>S.circ.setAttribute('r',2*S.P.s*p))}},
     {cap:'代點到直線距離公式，分子有絕對值，10 + k 可以是 10 也可以是 −10。',eq:'|3·2 + 4·1 + k| ÷ √(3² + 4²) = 2 → |10 + k| = 10',run(){}},
-    {cap:'所以圓的兩側各有一條：k = 0 和 k = −20，P 到兩條的距離都是 2。',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'所以圓的兩側各有一條：k = 0 和 k = −20，P 到兩條的距離都是 2。',eq:'10 + k = 10 → k = 0；10 + k = −10 → k = −20',async run(S,a){const L=ANIM.API,P=S.P;
       L.clear(S.ghost);
       const segs=[[0.8,-0.6,0,'k = 0',-0.4,-2.4],[3.2,2.6,-20,'k = −20',5.1,3.8]];
       for(const [fx,fy,k,t,tx,ty] of segs){const ln=S.lineK(k,L.C.good(),3.5,null,S.lines);ln.style.opacity=0;
@@ -3119,10 +3145,10 @@ ANIM.add('MA-直線與圓-010',{W:540,H:540,
     const tri=L.poly(svg,[[P.X(0),P.Y(0)],[P.X(5),P.Y(0)],[P.X(0),P.Y(5/3)]],{fill:L.C.cta(),opacity:0});
     L.el('circle',{cx:P.X(1),cy:P.Y(-2),r:Math.sqrt(10)*P.s,fill:'none',stroke:L.C.ink(),'stroke-width':2.5},svg);
     const tan=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3.5},svg);
-    const marks=L.g(svg);
+    const marks=L.g(svg),m4=L.g(svg);
     L.dot(svg,P.X(1),P.Y(-2),L.C.ink(),6);L.text(svg,P.X(1)+10,P.Y(-2)+28,'O′(1, −2)','lbl');
     L.dot(svg,P.X(2),P.Y(1),L.C.ink(),7);L.text(svg,P.X(2)+10,P.Y(1.35),'P(2, 1)','lbl');
-    return{P,tri,tan,marks,reset(){tri.setAttribute('opacity',0);tan.setAttribute('d','');L.clear(marks)}}},
+    return{P,tri,tan,marks,m4,reset(){tri.setAttribute('opacity',0);tan.setAttribute('d','');L.clear(marks);L.clear(m4)}}},
   steps:[
     {cap:'圓心 O′(1, −2)、半徑 √10，P(2, 1) 在圓上。要找圓在 P 的切線。',run(){}},
     {cap:'先看半徑 O′P：往右 1、往上 3，斜率是 3。這是半徑的斜率，不是切線的。',eq:'O′P 斜率 = (1 − (−2)) ÷ (2 − 1) = 3',async run(S,a){const L=ANIM.API,P=S.P;
@@ -3134,9 +3160,9 @@ ANIM.add('MA-直線與圓-010',{W:540,H:540,
       L.el('path',{d:`M${P.X(2-u[0])},${P.Y(1-u[1])}L${P.X(2-u[0]+v[0])},${P.Y(1-u[1]+v[1])}L${P.X(2+v[0])},${P.Y(1+v[1])}`,fill:'none',stroke:L.C.cta(),'stroke-width':2},S.marks)}},
     {cap:'L 的 x 截距 5、y 截距 5/3，和兩軸圍出的面積是 25/6，(2) 對。(5, 0) 代入 5 + 0 = 5，(4) 對。',eq:'面積 = (1/2) × 5 × (5/3) = 25/6',async run(S,a){const L=ANIM.API,P=S.P;
       await L.tween(a?600:0,p=>S.tri.setAttribute('opacity',0.3*p));
-      L.dot(S.marks,P.X(5),P.Y(0),L.C.cta(),7);L.text(S.marks,P.X(5),P.Y(0)-14,'(5, 0)','hand','middle');
-      L.dot(S.marks,P.X(0),P.Y(5/3),L.C.cta(),7);L.text(S.marks,P.X(-0.5),P.Y(5/3)+8,'5/3','hand','end')}},
-    {cap:'切線到圓心的距離一定等於半徑 √10，(5) 對。答案選 (1)(2)(4)(5)。',eq:'|1 − 6 − 5| ÷ √10 = 10 ÷ √10 = √10',run(S){const L=ANIM.API,P=S.P;
+      L.dot(S.m4,P.X(5),P.Y(0),L.C.cta(),7);L.text(S.m4,P.X(5),P.Y(0)-14,'(5, 0)','hand','middle');
+      L.dot(S.m4,P.X(0),P.Y(5/3),L.C.cta(),7);L.text(S.m4,P.X(-0.5),P.Y(5/3)+8,'5/3','hand','end')}},
+    {cap:'切線到圓心的距離一定等於半徑 √10，(5) 對。答案選 (1)(2)(4)(5)。（前面：(1)(2)(4) 對、(3) 錯）',eq:'|1 − 6 − 5| ÷ √10 = 10 ÷ √10 = √10',run(S){const L=ANIM.API,P=S.P;L.clear(S.m4);S.tri.setAttribute('opacity',0);
       L.text(S.marks,P.X(1.2),P.Y(-1.0),'√10','hand','end')}},
   ]});
 
@@ -3158,7 +3184,7 @@ ANIM.add('MA-直線與圓-011',{W:560,H:540,
     {cap:'設切線 y − 4 = m(x − 2)，用「圓心到切線距離 = 2」去解 m，結果只有一個 m = 3/4。',eq:'|4 − 2m| ÷ √(m² + 1) = 2 → m = 3/4',async run(S,a){const L=ANIM.API,P=S.P;
       await L.tween(a?900:0,p=>S.t1.setAttribute('d',P.fpath(x=>0.75*x+2.5,2-6.5*p,2+1.5*p)));
       L.dot(S.marks,P.X(-1.2),P.Y(1.6),L.C.cta(),6);L.text(S.marks,P.X(-3.9),P.Y(3.3),'y = (3/4)x + 5/2','hand','start')}},
-    {cap:'另一條呢？把過 P 的直線轉到鉛直，x = 2 剛好碰到圓。它斜率不存在，所以設 m 時抓不到。',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'另一條呢？把過 P 的直線轉到鉛直，x = 2 剛好碰到圓。它斜率不存在，所以設 m 時抓不到。',eq:'x = 2：圓心到它的距離 = 2 = 半徑，也是切線',async run(S,a){const L=ANIM.API,P=S.P;
       if(a){await L.tween(1500,p=>S.setRot(L.lerp(36.87,90,p)))}
       S.setRot(0);S.rot.setAttribute('x1',0);S.rot.setAttribute('x2',0);S.rot.setAttribute('y1',0);S.rot.setAttribute('y2',0);
       await L.tween(a?400:0,p=>S.t2.setAttribute('opacity',p));
@@ -3191,7 +3217,7 @@ ANIM.add('MA-直線與圓-012',{W:560,H:620,
       L.text(S.marks,S.P.X(1.98),S.P.Y(0.45),'d','hand','start')}},
     {cap:'弦長 = 2√(4 − d²) = 4/√(k² + 1)。把 k 調大，弦越來越短，所以 (2) 錯。',eq:'弦長 = 4 ÷ √(k² + 1)',async run(S,a){const L=ANIM.API;S.perp.setAttribute('opacity',0);L.clear(S.marks);
       if(a){await L.tween(1300,p=>S.setK(L.lerp(0.5,3,p)));await L.wait(300)}S.setK(3)}},
-    {cap:'k = 0 時直線就是 x 軸，弦是直徑，長 4 最大，而且只有 k = 0 做得到，(4) 對。',async run(S,a){const L=ANIM.API;
+    {cap:'k = 0 時直線就是 x 軸，弦是直徑，長 4 最大，而且只有 k = 0 做得到，(4) 對。',eq:'k = 0：弦長 = 4 ÷ √1 = 4（直徑，最大）',async run(S,a){const L=ANIM.API;
       await L.tween(a?900:0,p=>S.setK(L.lerp(3,0,p)))}},
     {cap:'圓在 O 的切線是 x = 0，寫不成 y = kx，(1) 錯。k = 1 時弦長是 2√2，(5) 錯。選 (3)(4)。',eq:'k = 1：弦長 = 4 ÷ √2 = 2√2',async run(S,a){const L=ANIM.API,P=S.P;
       await L.tween(a?700:0,p=>S.setK(p));
@@ -3255,7 +3281,7 @@ ANIM.add('MA-矩陣-020',{W:600,H:480,
       L.el('path',{d:S.arc(0.15,0,2*S.ang),fill:'none',stroke:L.C.pen(),'stroke-width':2.5},S.marks);
       L.text(S.marks,P.X(-0.2),P.Y(0.2),'2θ','hand','end');
       L.text(S.marks,P.X(-0.6)-10,P.Y(0.8)-10,'(−3/5, 4/5)','handg','end')}},
-    {cap:'(0, 1) 鏡射後到 (4/5, 3/5)，這是第二行。',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'(0, 1) 鏡射後到 (4/5, 3/5)，這是第二行。',eq:'(0, 1) → (sin 2θ, −cos 2θ) = (4/5, 3/5)',async run(S,a){const L=ANIM.API,P=S.P;
       L.line(S.marks,P.X(0),P.Y(1),P.X(0.8),P.Y(0.6),L.C.soft(),2,'6 6');
       L.dot(S.marks,P.X(0),P.Y(1),L.C.ink(),6);L.text(S.marks,P.X(0)-28,P.Y(1)+28,'(0, 1)','lbl','end');
       const f=S.mv(S.marks,[0,1],[0.8,0.6]);await L.tween(a?1100:0,f);
@@ -3275,7 +3301,7 @@ ANIM.add('MA-矩陣-024',{W:600,H:520,
     return{P,sp,spiral,pt,marks,reset(){sp.setAttribute('d','');L.clear(marks)}}},
   steps:[
     {cap:'把變換寫成矩陣，提出 2，剩下的正好是旋轉 60° 的矩陣：每按一次，轉 60° 再放大 2 倍。',eq:'[1 −√3；√3 1] = 2 × [cos 60° −sin 60°；sin 60° cos 60°]',run(){}},
-    {cap:'從 P₀(1, 0) 開始按：P₁ 離原點 2、P₂ 離原點 4、P₃ 離原點 8，每次多轉 60°。',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'從 P₀(1, 0) 開始按：P₁ 離原點 2、P₂ 離原點 4、P₃ 離原點 8，每次多轉 60°。',eq:'OP₁ = 2，OP₂ = 4，OP₃ = 8；P₃ = (−8, 0)',async run(S,a){const L=ANIM.API,P=S.P;
       const lab=[null,['P₁',14,8,'start'],['P₂',-12,-10,'end'],['P₃',0,-16,'middle']];
       for(let k=1;k<=3;k++){await L.tween(a?600:0,p=>S.sp.setAttribute('d',S.spiral(60*(k-1+p))));
         const [x,y]=S.pt(k);L.dot(S.marks,P.X(x),P.Y(y),L.C.good(),7);
@@ -3349,9 +3375,12 @@ ANIM.add('MA-空間中的平面與直線-008',{W:600,H:400,
     {cap:'直角三角形 PHA 裡，PA = 9/2、HA = √65/2，所以高 PH = 2。',eq:'PH = √(81/4 − 65/4) = √4 = 2',run(S){const L=ANIM.API;
       const p=S.Q(S.Pp),h=S.Q(S.H);L.text(S.marks,p[0]+10,(p[1]+h[1])/2+8,'2','hand big','start')}},
     {cap:'底面積 = (1/2) × 2√5 × 3√5 = 15，體積 = (1/3) × 15 × 2 = 10。答案 10。',eq:'V = (1/3) × 15 × 2 = 10',async run(S,a){const L=ANIM.API;
+      L.clear(S.marks);S.ell.setAttribute('opacity',0);
+      {const p=S.Q(S.Pp),h=S.Q(S.H);L.line(S.marks,p[0],p[1],h[0],h[1],L.C.cta(),3.5);L.dot(S.marks,h[0],h[1],L.C.cta(),6);
+        L.text(S.marks,h[0]+10,h[1]+26,'H','lbl','start');L.text(S.marks,p[0]+10,(p[1]+h[1])/2+8,'高 2','hand big','start')}
       await L.tween(a?700:0,p=>S.tri.setAttribute('fill-opacity',0.3*p));
       const ca=S.Q([0,S.A[1]/2,0]),cb=S.Q([S.B[0]/2,0,0]);
-      L.text(S.marks,ca[0]-10,ca[1]+4,'2√5','handg','end');L.text(S.marks,cb[0],cb[1]+30,'3√5','handg','middle')}},
+      L.text(S.marks,ca[0]-20,ca[1]+4,'2√5','handg','end');L.text(S.marks,cb[0],cb[1]+30,'3√5','handg','middle')}},
   ]});
 
 ANIM.add('MA-空間向量-002',{W:560,H:470,
@@ -3390,7 +3419,7 @@ ANIM.add('MA-空間向量-005',{W:560,H:480,
     const proj=L.g(svg);
     const tri=L.poly(svg,[A,B,C],{fill:L.C.good(),opacity:0.25,stroke:L.C.good(),'stroke-width':3.5});
     const lay=L.g(svg);
-    [[O,'O',-14,6,'end'],[A,'A(1, 0, 0)',-12,24,'end'],[B,'B(0, 2, 0)',0,32,'middle'],[C,'C(0, 0, 3)',14,6,'start']].forEach(([p,s,dx,dy,an])=>{L.dot(svg,...p,ink,6);L.text(svg,p[0]+dx,p[1]+dy,s,'lbl',an)});
+    [[O,'O',-10,-10,'end'],[A,'A(1, 0, 0)',-12,24,'end'],[B,'B(0, 2, 0)',0,32,'middle'],[C,'C(0, 0, 3)',14,6,'start']].forEach(([p,s,dx,dy,an])=>{L.dot(svg,...p,ink,6);L.text(svg,p[0]+dx,p[1]+dy,s,'lbl',an)});
     return{P3,O,A,B,C,proj,lay,reset(){L.clear(proj);L.clear(lay)}}},
   steps:[
     {cap:'先畫出 A、B、C 三點和 △ABC。兩邊向量 AB→ = (−1, 2, 0)，AC→ = (−1, 0, 3)。',eq:'AB→ = (−1, 2, 0)，AC→ = (−1, 0, 3)',async run(S,a){const L=ANIM.API;
@@ -3488,7 +3517,7 @@ ANIM.add('MA-空間向量-010',{W:580,H:460,
     {cap:'(3) x = y = z = 1 都是正數，但 s = 3，P 跑到平面 ABC 的另一側，不在四面體內部，錯。',eq:'四面體內部還需要 x + y + z < 1',async run(S,a){const L=ANIM.API;L.clear(S.lay);
       const d=L.dot(S.lay,S.SX(0),S.yM,L.C.pen(),8);
       await L.tween(a?1000:0,p=>d.setAttribute('cx',S.SX(3*p)));
-      L.text(S.lay,S.SX(3)-8,S.yM-20,'(1, 1, 1)','hand','end')}},
+      const t=L.text(S.lay,S.SX(3)-8,S.yM-20,'(1, 1, 1)','hand','end');t.setAttribute('stroke',L.C.paper());t.setAttribute('stroke-width',8);t.setAttribute('paint-order','stroke')}},
     {cap:'(4) P 到平面 ABC 的距離是 O 的 |1 − s| 倍。s = 2 時剛好 1 倍，同底等高，體積相等，對。',eq:'距離比 = |1 − s|，s = 2 ⇒ 1 倍',async run(S,a){const L=ANIM.API;L.clear(S.lay);
       L.dot(S.lay,S.SX(2),S.yM,L.C.cta(),8);L.text(S.lay,S.SX(2)+12,S.yM+30,'P','lbl');
       const y=S.yM+80;
@@ -3496,7 +3525,7 @@ ANIM.add('MA-空間向量-010',{W:580,H:460,
       if(a)await L.wait(400);
       L.arrow(S.lay,S.SX(1),y,S.SX(2),y,L.C.cta(),3);L.arrow(S.lay,S.SX(2),y,S.SX(1),y,L.C.cta(),3);
       L.text(S.lay,S.SX(0.5),y-12,'d','hand','middle');L.text(S.lay,S.SX(1.5),y-12,'d','hand','middle')}},
-    {cap:'(5) s < 1 時 1 − s > 0，P 和 O 在平面 ABC 同側，不是異側，錯。所以選 (1)(4)。',eq:'s < 1 ⇒ 1 − s > 0 ⇒ 與 O 同側',async run(S,a){const L=ANIM.API;
+    {cap:'(5) s < 1 時 1 − s > 0，P 和 O 在平面 ABC 同側，不是異側，錯。所以選 (1)(4)。',eq:'s < 1 ⇒ 1 − s > 0 ⇒ 與 O 同側',async run(S,a){const L=ANIM.API;L.clear(S.lay);
       const r=L.el('rect',{x:262,y:S.yT,width:0,height:S.yB-S.yT,fill:L.C.good(),opacity:0.15},S.lay);
       await L.tween(a?800:0,p=>r.setAttribute('width',(S.SX(1)-262)*p));
       L.text(S.lay,(262+S.SX(1))/2,S.yT+34,'s < 1','handg','middle');
@@ -3763,7 +3792,7 @@ ANIM.add('MB-三角比-007',{W:600,H:480,
     {cap:'C 已經 120°，A + B 只剩 60°，角度不可能是 3 : 5 : 7。邊長比等於正弦比，不等於角度比。',eq:'A + B = 180° − 120° = 60°',run(S){const L=ANIM.API;mark(L,S.chk,2,false)}},
     {cap:'最短邊 3，所以 k = 1。面積 = ½ × 3 × 5 × sin 120° = 15√3/4，不是 15√3/2。',eq:'面積 = ½ · 3 · 5 · (√3/2) = 15√3/4',async run(S,a){const L=ANIM.API;
       await L.tween(a?700:0,q=>S.fill.setAttribute('opacity',0.18*q));mark(L,S.chk,4,false)}},
-    {cap:'外接圓用正弦定理：2R = 7 ÷ sin 120° = 14/√3，R = 7√3/3。選 (1)(3)(5)。',eq:'2R = 7 ÷ (√3/2) = 14/√3，R = 7√3/3',async run(S,a){const L=ANIM.API;
+    {cap:'外接圓用正弦定理：2R = 7 ÷ sin 120° = 14/√3，R = 7√3/3。選 (1)(3)(5)。',eq:'2R = 7 ÷ (√3/2) = 14/√3，R = 7√3/3',async run(S,a){const L=ANIM.API;S.fill.setAttribute('opacity',0);
       await L.tween(a?1000:0,q=>S.circ.setAttribute('r',Rr*K*q));
       L.dot(S.lay,O[0],O[1],L.C.cta(),5);L.line(S.lay,O[0],O[1],B[0],B[1],L.C.cta(),2.5,'6 5');
       L.text(S.lay,(O[0]+B[0])/2+10,(O[1]+B[1])/2,'R','hand');mark(L,S.chk,5,true)}},
@@ -3785,9 +3814,10 @@ ANIM.add('MB-三角比-024',{W:600,H:400,
     {cap:'0° < θ < 180°，角的終邊在上半圓，所以 sin θ > 0。先把 sin θ + cos θ = 1/5 兩邊平方。',eq:'1 + 2 sin θ cos θ = 1/25 ⇒ sin θ cos θ = −12/25',run(S){const L=ANIM.API;
       S.arc.setAttribute('stroke',L.C.good());L.text(S.lay,X(0.55),Y(0.98),'sin θ > 0','handg');mark(L,S.chk,2,true)}},
     {cap:'sin θ 是正的，乘積卻是負的，表示 cos θ < 0，θ 落在第二象限，是鈍角。',eq:'sin θ > 0，sin θ cos θ < 0 ⇒ cos θ < 0',async run(S,a){const L=ANIM.API;
-      await L.tween(a?800:0,p=>S.sh.setAttribute('opacity',0.16*p));L.text(S.lay,253,Y(0.1),'cos θ < 0','hand','middle');mark(L,S.chk,1,false)}},
+      await L.tween(a?800:0,p=>S.sh.setAttribute('opacity',0.16*p));S.cl=L.text(S.lay,253,Y(0.1),'cos θ < 0','hand','middle');mark(L,S.chk,1,false)}},
     {cap:'(sin θ − cos θ)² = 1 − 2 sin θ cos θ = 49/25。sin θ 正、cos θ 負，相減一定是正的，只取 7/5。',eq:'sin θ − cos θ = 7/5',run(S){const L=ANIM.API;mark(L,S.chk,4,true)}},
     {cap:'和 sin θ + cos θ = 1/5 聯立，sin θ = 4/5、cos θ = −3/5，tan θ = −4/3。(3)(5) 都錯，選 (2)(4)。',eq:'sin θ = 4/5，cos θ = −3/5，tan θ = −4/3',async run(S,a){const L=ANIM.API;
+      if(S.cl)S.cl.remove();
       const px=X(-0.6),py=Y(0.8);const l=L.line(S.lay,OX,OY,px,py,L.C.good(),3.5);
       await L.tween(a?700:0,p=>{const t=p*Math.atan2(0.8,-0.6);l.setAttribute('x2',X(Math.cos(t)));l.setAttribute('y2',Y(Math.sin(t)))});
       L.dot(S.lay,px,py,L.C.good(),7);L.text(S.lay,px-12,py-10,'P','lbl','end');
@@ -3816,7 +3846,7 @@ ANIM.add('MB-三角比-028',{W:600,H:500,
     L.poly(svg,[A,B,C,D],{fill:'none',stroke:L.C.good(),'stroke-width':3.5,'stroke-linejoin':'round'});
     [A,B,C,D].forEach(p=>L.dot(svg,p[0],p[1],L.C.ink(),5));
     L.text(svg,A[0]-12,A[1]+8,'A','lbl','end');L.text(svg,B[0],B[1]-14,'B','lbl','middle');L.text(svg,C[0]+12,C[1]-4,'C','lbl');L.text(svg,D[0]+12,D[1]+20,'D','lbl');
-    lab(L,svg,A,B,'5');lab(L,svg,B,C,'3');lab(L,svg,C,D,'3');lab(L,svg,D,A,'8');
+    lab(L,svg,A,B,'5');lab(L,svg,B,C,'3');lab(L,svg,C,D,'3');lab(L,svg,D,A,'8','lbl',-20);
     const lay=L.g(svg),chk=L.g(svg);
     return{lay,chk,f1,f2,reset(){L.clear(lay);L.clear(chk);f1.setAttribute('opacity',0);f2.setAttribute('opacity',0)}}},
   steps:[
@@ -3830,10 +3860,14 @@ ANIM.add('MB-三角比-028',{W:600,H:500,
       L.text(S.lay,(A[0]+C[0])/2-40,A[1]+30,'AC = 7','hand','middle');mark(L,S.chk,2,true)}},
     {cap:'面積拆成兩塊三角形：½·5·3·sin120° + ½·3·8·sin60° = 15√3/4 + 6√3 = 39√3/4。',eq:'15√3/4 + 6√3 = 39√3/4',async run(S,a){const L=ANIM.API;
       await L.tween(a?900:0,q=>{S.f1.setAttribute('opacity',0.2*q);S.f2.setAttribute('opacity',0.2*q)});mark(L,S.chk,4,true)}},
-    {cap:'這個圓也是 △ABC 的外接圓，直徑 = 7 ÷ sin120° = 14√3/3 ≈ 8.08，不是 7。選 (1)(2)(4)。',eq:'2R = AC ÷ sin B = 7 ÷ (√3/2) = 14√3/3',async run(S,a){const L=ANIM.API;
-      const e1=[O[0]-R*K,O[1]],e2=[O[0]+R*K,O[1]];const l=L.line(S.lay,e1[0],e1[1],e1[0],e1[1],L.C.pen(),3);
-      await L.tween(a?900:0,q=>l.setAttribute('x2',L.lerp(e1[0],e2[0],q)));
-      L.text(S.lay,O[0]-60,O[1]+30,'直徑 ≈ 8.08','hand','middle');mark(L,S.chk,5,false)}},
+    {cap:'（前面：B = 120°，AC = 7）這個圓也是 △ABC 的外接圓，直徑 = 7 ÷ sin120° = 14√3/3 ≈ 8.08，不是 7。選 (1)(2)(4)。',eq:'2R = AC ÷ sin B = 7 ÷ (√3/2) = 14√3/3',async run(S,a){const L=ANIM.API;
+      L.clear(S.lay);S.f1.setAttribute('opacity',0.2);S.f2.setAttribute('opacity',0);
+      L.line(S.lay,A[0],A[1],C[0],C[1],L.C.cta(),3,'8 6');L.el('path',{d:ang(B,A,C,26),fill:'none',stroke:L.C.cta(),'stroke-width':3},S.lay);
+      L.text(S.lay,B[0]+2,B[1]+52,'120°','hand','middle');L.text(S.lay,(A[0]+C[0])/2-40,A[1]+30,'AC = 7','hand','middle');
+      const t=Math.PI/2,e1=[O[0]+R*K*Math.cos(t),O[1]-R*K*Math.sin(t)],e2=[O[0]-R*K*Math.cos(t),O[1]+R*K*Math.sin(t)];
+      const l=L.line(S.lay,e1[0],e1[1],e1[0],e1[1],L.C.pen(),3);L.dot(S.lay,O[0],O[1],L.C.pen(),4);
+      await L.tween(a?900:0,q=>{l.setAttribute('x2',L.lerp(e1[0],e2[0],q));l.setAttribute('y2',L.lerp(e1[1],e2[1],q))});
+      L.text(S.lay,O[0]+12,O[1]+160,'直徑 ≈ 8.08','hand','start');mark(L,S.chk,5,false)}},
   ]});
 })();
 
@@ -3894,8 +3928,8 @@ ANIM.add('MB-圓錐曲線-014',{W:560,H:480,
     {cap:'頂點是 F 和準線的中點 (0, 0)；焦點在下、準線在上，所以開口向下，c = 2。',eq:'頂點 (0, 0)，c = 2，開口向下',async run(S,a){const L=ANIM.API;const P=S.P;
       L.clear(S.mv);S.cur.setAttribute('d',P.fpath(f,-6.8,6.8));
       L.el('circle',{cx:P.X(0),cy:P.Y(0),r:9,fill:'none',stroke:L.C.cta(),'stroke-width':3},S.lay);
-      L.line(S.lay,P.X(-0.6),P.Y(0),P.X(-0.6),P.Y(-2),L.C.pen(),2.5);L.line(S.lay,P.X(-0.6),P.Y(0),P.X(-0.6),P.Y(2),L.C.pen(),2.5);
-      L.text(S.lay,P.X(-0.8),P.Y(1)+8,'2','hand','end');L.text(S.lay,P.X(-0.8),P.Y(-1)+8,'2','hand','end')}},
+      L.line(S.lay,P.X(0.5),P.Y(0),P.X(0.5),P.Y(-2),L.C.pen(),2.5);L.line(S.lay,P.X(0.5),P.Y(0),P.X(0.5),P.Y(2),L.C.pen(),2.5);
+      L.text(S.lay,P.X(0.7),P.Y(1)+8,'2','hand','start');L.text(S.lay,P.X(0.7),P.Y(-1.1)+8,'2','hand','start')}},
     {cap:'開口向下的標準式 x² = −4cy，c = 2 代入得 x² = −8y。選 (5)。',eq:'x² = −4cy = −8y',run(S){const L=ANIM.API;
       L.text(S.lay,S.P.X(0.8),S.P.Y(-5),'x² = −8y','hand big')}},
   ]});
@@ -3973,7 +4007,7 @@ ANIM.add('MB-多項式函數-010',{W:580,H:520,
     {cap:'展開得 b = −2a、c = −3a。a < 0，所以 c > 0，也就是圖形和 y 軸交在上方。(2) 錯。',eq:'c = f(0) = −3a > 0',async run(S,a){const L=ANIM.API,P=S.P;
       const d=L.dot(S.lay,P.X(0),P.Y(S.f(0)),L.C.cta(),8);L.text(S.lay,P.X(0)-12,P.Y(S.f(0))-10,'(0, c)','lbl','end');
       await L.tween(a?500:0,p=>d.setAttribute('r',8*p))}},
-    {cap:'對稱軸 x = 1。x = −2 離軸 3，x = 5 離軸 4。開口向下，離軸越遠越低，所以 f(−2) > f(5)。(3) 錯。',eq:'f(−2) = 5a，f(5) = 12a，5a > 12a',async run(S,a){const L=ANIM.API,P=S.P;
+    {cap:'對稱軸 x = 1。x = −2 離軸 3，x = 5 離軸 4。開口向下，離軸越遠越低，所以 f(−2) > f(5)。(3) 錯。',eq:'f(−2) = 5a，f(5) = 12a，5a > 12a',async run(S,a){const L=ANIM.API,P=S.P;L.clear(S.lay);
       L.line(S.lay,P.X(1),P.Y(2.9),P.X(1),P.Y(-6.9),L.C.soft(),2,'6 6');L.text(S.lay,P.X(1)+8,P.Y(-5.6),'x = 1','tick');
       const pts=[[-2,'f(−2)'],[5,'f(5)']];
       for(const [x,t] of pts){const y=S.f(x);L.line(S.lay,P.X(x),P.Y(0),P.X(x),P.Y(y),L.C.cta(),2.5,'5 5');
@@ -3986,7 +4020,7 @@ ANIM.add('MB-多項式函數-010',{W:580,H:520,
       const l2=L.el('path',{fill:'none',stroke:L.C.pen(),'stroke-width':5,d:P.fpath(S.f,3.02,6)},S.lay);
       L.text(S.lay,P.X(-2.95),P.Y(-0.9),'f < 0','hand','start');L.text(S.lay,P.X(4.6),P.Y(-1.3),'f < 0','hand','start');
       await L.tween(a?600:0,p=>{l1.style.opacity=p;l2.style.opacity=p})}},
-    {cap:'(5) 把 b、c 換成 a：cx² + bx + a = −a(3x − 1)(x + 1)，−a > 0，大於 0 在兩根外側。選 (1)(4)(5)。',eq:'(3x − 1)(x + 1) > 0 ⇔ x < −1 或 x > 1/3',run(S){}},
+    {cap:'(5) 把 b、c 換成 a：cx² + bx + a = −a(3x − 1)(x + 1)，−a > 0，大於 0 在兩根外側。選 (1)(4)(5)。',eq:'(3x − 1)(x + 1) > 0 ⇔ x < −1 或 x > 1/3',run(S){ANIM.API.clear(S.lay)}},
   ]});
 
 ANIM.add('MB-多項式函數-012',{W:600,H:540,
@@ -3999,8 +4033,8 @@ ANIM.add('MB-多項式函數-012',{W:600,H:540,
   steps:[
     {cap:'先把整數點代進去：f(−2) = 1、f(−1) = 4、f(0) = 1、f(1) = −2、f(2) = 1、f(3) = 16、f(4) = 49。',eq:'f(x) = x³ − 4x + 1',async run(S,a){const L=ANIM.API,P=S.P;
       for(let x=-2;x<=4;x++){const v=S.f(x),c=v>0?L.C.good():L.C.pen();
-        if(v<=6){L.dot(S.dots,P.X(x),P.Y(v),c,7);L.text(S.dots,P.X(x)+(x===-1?0:0),P.Y(v)+(v>0?-14:30),String(v).replace('-','−'),v>0?'handg':'hand','middle')}
-        else{L.arrow(S.dots,P.X(x),P.Y(4.4),P.X(x),P.Y(5.7),c,3);L.text(S.dots,P.X(x)+(x===3?-10:10),P.Y(4.6),String(v),'handg',x===3?'end':'start')}
+        if(v<=6){L.dot(S.dots,P.X(x),P.Y(v),c,7);{const o={'-2':[-14,-8,'end'],'0':[14,-10,'start'],'2':[-14,-8,'end']}[x]||[0,v>0?-14:30,'middle'];L.text(S.dots,P.X(x)+o[0],P.Y(v)+o[1],String(v).replace('-','−'),v>0?'handg':'hand',o[2])}}
+        else{L.arrow(S.dots,P.X(x),P.Y(4.4),P.X(x),P.Y(5.7),c,3);L.text(S.dots,P.X(x)+8,P.Y(4.6),String(v),'handg','start')}
         if(a)await L.wait(250)}}},
     {cap:'勘根定理要找兩端點函數值「一正一負」的區間。五個選項的區間裡，只有 0 < x < 1 是 1 和 −2，異號。',eq:'f(0)·f(1) = 1 × (−2) < 0',async run(S,a){const L=ANIM.API,P=S.P;
       const iv=[[-2,-1,0],[-1,0,0],[0,1,1],[2,3,0],[3,4,0]];
@@ -4091,7 +4125,7 @@ ANIM.add('MB-平面向量-010',{W:560,H:600,
         L.arrow(g,...Q([-3+3*p,dy]),...Q([3+3*p,dy]),L.C.cta(),4)});
       L.text(S.lay,...Q([4.3,S.h+0.35]),'BC→','lbl');
       S.arc(S.lay,A,1.1,-120,0,L.C.pen());
-      L.text(S.lay,Q([0.9,S.h-1.5])[0],Q([0.9,S.h-1.5])[1],'120°','hand')}},
+      L.text(S.lay,Q([1.3,S.h-1.3])[0],Q([1.3,S.h-1.3])[1],'120°','hand')}},
     {cap:'CA→ 和 AM→ 也是頭尾相接。把 AM→ 平移到 C，夾角是 180° − 30° = 150°。',eq:'CA→ · AM→ = 6 × 3√3 × cos150° = −27',async run(S,a){const L=ANIM.API,Q=S.Q,C=S.C;L.clear(S.lay);
       L.arrow(S.lay2,...Q(C),...Q(S.A),L.C.good(),4);L.text(S.lay2,...Q([1.75,3.2]),'CA→','lbl');
       L.arrow(S.lay2,...Q(S.A),...Q(S.M),L.C.cta(),3);
@@ -4146,7 +4180,7 @@ ANIM.add('MB-平面向量-012',{W:560,H:560,
     {cap:'用每小時 4 公里橫渡 2 公里，要 2 ÷ 4 = 1/2 小時，也就是 30 分鐘。答案 30。',eq:'時間 = 2 ÷ 4 = 1/2 小時 = 30 分鐘',async run(S,a){const L=ANIM.API,Q=S.Q;
       const b=L.el('path',{d:'M-10,10L0,-14L10,10Z',fill:L.C.cta()},S.boat);
       await L.tween(a?1500:0,p=>b.setAttribute('transform',`translate(${Q(0.9,0)[0]},${Q(0,0.35+4.7*p)[1]})`));
-      L.text(S.boat,Q(1.4,5.05)[0],Q(0,5.05)[1]+6,'30 分鐘','hand big')}},
+      L.text(S.boat,Q(1.4,4.55)[0],Q(0,4.55)[1]+6,'30 分鐘','hand big')}},
   ]});
 
 ANIM.add('MB-平面向量-027',{W:600,H:560,
@@ -4195,7 +4229,7 @@ ANIM.add('MB-平面向量-030',{W:600,H:540,
       L.text(S.par,Q(D)[0]+8,Q(D)[1]+8,'b + c','lbl','start')}},
     {cap:'相乘時交叉項 b · c 一正一負消掉，只剩 |c|² − |b|²，跟夾角無關。',eq:'(1/2)(c + b) · (c − b) = (1/2)(|c|² − |b|²) = (1/2)(64 − 25) = 39/2',run(S){const L=ANIM.API;L.clear(S.par);S.draw(70,true)}},
     {cap:'不信就把 ∠A 轉來轉去：三角形一直變，AM→ · BC→ 卻一直是 19.5。答案 39/2。',eq:'AM→ · BC→ = 39/2',async run(S,a){const L=ANIM.API,Q=S.Q;
-      const t1=L.text(S.info,...Q([-3,8]),'','lbl'),t2=L.text(S.info,...Q([-3,7.1]),'','hand big');
+      const t1=L.text(S.info,...Q([9.7,8.0]),'','lbl','end'),t2=L.text(S.info,...Q([9.7,7.1]),'','hand big','end');
       const show=t=>{const {A,B,C,M}=S.draw(t,true);const v=M[0]*(C[0]-B[0])+M[1]*(C[1]-B[1]);
         t1.textContent='∠A = '+Math.round(t)+'°';t2.textContent='AM→ · BC→ = '+v.toFixed(1)};
       if(a){await L.tween(800,p=>show(70+40*p));await L.tween(1100,p=>show(110-70*p));await L.tween(600,p=>show(40+30*p))}
@@ -4216,7 +4250,7 @@ ANIM.add('MB-指數與對數函數-004',{W:600,H:380,
       const t1=L.text(S.top,300,114,'= 15 + 0.562','lbl big','middle');
       const t2=S.sup(S.top,300,172,[['6',0],['20',1],[' = 10',0],['0.562',1],[' × 10',0],['15',1]],'hand big','middle');
       await L.tween(a?800:0,p=>{t1.style.opacity=p;t2.style.opacity=Math.max(0,2*p-1)})}},
-    {cap:'最高位數字看 10^0.562。在數線上把 log 1 到 log 10 的位置標出來，看 0.562 落在哪兩格中間。',async run(S,a){const L=ANIM.API,X=S.X,y=S.yl;
+    {cap:'最高位數字看 10^0.562。在數線上把 log 1 到 log 10 的位置標出來，看 0.562 落在哪兩格中間。',eq:'log 1 = 0，log 10 = 1，10^0.562 的首位看 0.562',async run(S,a){const L=ANIM.API,X=S.X,y=S.yl;
       L.line(S.nl,X(0),y,X(1),y,L.C.ink(),2.5);
       for(let k=1;k<=10;k++){const v=Math.log10(k);L.line(S.nl,X(v),y-9,X(v),y+9,L.C.ink(),2);
         L.text(S.nl,X(v),y+34,String(k),'tick','middle');if(a)await L.wait(70)}
@@ -4545,7 +4579,7 @@ ANIM.add('MB-數列與級數-011',{W:620,H:500,
     const seq=n=>[1,2,3,4,3,2][(n-1)%6];
     const N=14,X=n=>60+(n-1)*40,Y=f=>270-(f-1)*62;
     for(let f=1;f<=4;f++){L.line(svg,X(1)-12,Y(f),X(N)+12,Y(f),L.C.grid(),1.5);L.text(svg,X(1)-22,Y(f)+6,f+'F','tick','end')}
-    for(const n of[1,6,7,12])L.text(svg,X(n),Y(1)+30,'n='+n,'tick','middle');
+    for(const n of[1,6,7,12])L.text(svg,X(n),Y(1)+46,'n='+n,'tick','middle');
     const path=L.el('path',{fill:'none',stroke:L.C.good(),'stroke-width':3},svg);
     const dots=[];for(let n=1;n<=N;n++)dots.push(L.dot(svg,X(n),Y(seq(n)),L.C.good(),7));
     const show=m=>{let d='';for(let n=1;n<=m;n++)d+=(n>1?'L':'M')+X(n)+','+Y(seq(n));path.setAttribute('d',d);dots.forEach((c,i)=>c.style.opacity=i<m?1:0)};
@@ -4716,7 +4750,11 @@ ANIM.add('MB-數據分析-007',{W:620,H:470,
       const ln=L.line(S.layer,S.X(70),40,S.X(70),S.AX,L.C.pen(),3,'8 6');
       const b=S.band(S.layer,300,70,Math.sqrt(47.2),L.C.pen(),'合併 70 ± 6.87');
       if(a)await L.tween(700,p=>b.style.opacity=p)}},
-    {cap:'平均 74，(3) 對 (1) 錯；標準差 8.44 > 8，(4) 對 (2) 錯；(5) 對。選 (3)(4)(5)。',eq:'平均 74，σ ≈ 8.44；(5) 扣分後 σ ≈ 6.87',run(S){}},
+    {cap:'回到原本兩班：平均 74，(3) 對 (1) 錯；標準差 8.44 > 8，(4) 對 (2) 錯；(5) 對。選 (3)(4)(5)。',eq:'平均 74，σ ≈ 8.44；(5) 扣分後 σ ≈ 6.87',async run(S,a){const L=ANIM.API;
+      L.clear(S.layer);S.band(S.layer,90,70,6,L.C.good(),'甲 70 ± 6');S.band(S.layer,180,80,8,L.C.cta(),'乙 80 ± 8');
+      L.line(S.layer,S.X(74),40,S.X(74),S.AX,L.C.pen(),3,'8 6');S.band(S.layer,300,74,Math.sqrt(71.2),L.C.pen(),'合併 74 ± 8.44');
+      const g=L.g(S.layer);L.text(g,S.X(74)+10,246,'(5) 扣分後合併 70 ± 6.87','lbl','start');L.text(g,600,366,'選 (3)(4)(5)','handg big','end');
+      await L.tween(a?600:0,p=>g.style.opacity=p)}},
   ]});
 
 ANIM.add('MB-數據分析-009',{W:600,H:480,
@@ -4921,7 +4959,7 @@ ANIM.add('MB-機率-003',{W:600,H:450,
       S.lensT.textContent='';await S.move(a,315,330,1000);S.tA.setAttribute('x',315);S.tB.setAttribute('x',505);S.mid.textContent='交集最大 = 0.3';S.addChk('(4) ✗')}},
     {cap:'不管兩圓怎麼擺，聯集都把整個 B 包進去，所以 P(A∪B) ≥ 0.4，(5) 對。',eq:'B ⊂ A∪B → P(A∪B) ≥ P(B) = 0.4',async run(S,a){
       S.mid.textContent='';await S.move(a,240,375,900);S.mid.textContent='A∪B 一定包含 B';S.addChk('(5) ✓')}},
-    {cap:'正確的是 (2)(3)(5)，選 (2)(3)(5)。',run(S){S.mid.textContent='選 (2)(3)(5)'}},
+    {cap:'正確的是 (2)(3)(5)，選 (2)(3)(5)。',eq:'(1) ✗ (2) ✓ (3) ✓ (4) ✗ (5) ✓',run(S){S.mid.textContent='選 (2)(3)(5)'}},
   ]});
 
 ANIM.add('MB-機率-009',{W:600,H:460,
@@ -5051,7 +5089,7 @@ ANIM.add('MB-直線與圓-001',{W:600,H:460,
       await L.tween(a?1000:0,p=>{const x2=2+(13-2)*p;S.ln.setAttribute('x1',S.X(2));S.ln.setAttribute('y1',S.Y(S.f(2)));S.ln.setAttribute('x2',S.X(x2));S.ln.setAttribute('y2',S.Y(S.f(x2)))});
       S.ext.setAttribute('x1',S.X(0));S.ext.setAttribute('y1',S.Y(80));S.ext.setAttribute('x2',S.X(2));S.ext.setAttribute('y2',S.Y(S.f(2)));
       L.dot(S.top,S.X(0),S.Y(80),L.C.soft(),5);L.text(S.top,S.X(0)+12,S.Y(80)+26,'80','tick')}},
-    {cap:'從 8 公里再多走 4 公里到 12 公里，車資多 4×25 = 100 元，280 + 100 = 380 元，選 (2)。',eq:'280 + 4 × 25 = 380',async run(S,a){const L=ANIM.API,C=L.C;
+    {cap:'從 8 公里再多走 4 公里到 12 公里，車資多 4×25 = 100 元（前面：斜率 25），280 + 100 = 380 元，選 (2)。',eq:'280 + 4 × 25 = 380',async run(S,a){const L=ANIM.API,C=L.C;L.clear(S.layer);
       const g=L.g(S.top);await L.tween(a?1000:0,p=>{L.clear(g);const x=8+4*p;
         L.line(g,S.X(8),S.Y(280),S.X(x),S.Y(280),C.cta(),3);L.dot(g,S.X(x),S.Y(S.f(x)),C.cta(),7)});
       L.line(g,S.X(12),S.Y(280),S.X(12),S.Y(380),C.cta(),3);L.line(g,S.X(12),S.Y(380),S.X(12),S.Y(0),C.soft(),2,'5 5');
@@ -5107,7 +5145,7 @@ ANIM.add('MB-直線與圓-007',{W:560,H:500,
   init(svg,L){const C=L.C;const P=L.plane(svg,{x0:-1,x1:9,y0:-2,y1:7,W:560,H:500,labels:1});
     L.line(svg,P.X(-1),P.Y(0),P.X(9),P.Y(0),C.mid(),5);L.text(svg,P.X(1),P.Y(0)+48,'道路（x 軸）','tick');
     const layer=L.g(svg);const top=L.g(svg);
-    L.dot(svg,P.X(1),P.Y(2),C.good(),7);L.text(svg,P.X(1)-10,P.Y(2)-12,'A(1, 2)','lbl','end');
+    L.dot(svg,P.X(1),P.Y(2),C.good(),7);L.text(svg,P.X(1),P.Y(2)+34,'A(1, 2)','lbl','middle');
     L.dot(svg,P.X(7),P.Y(6),C.good(),7);L.text(svg,P.X(7)+12,P.Y(6)+8,'B(7, 6)','lbl');
     return{P,layer,top,reset(){L.clear(layer);L.clear(top)}}},
   steps:[
@@ -5118,7 +5156,7 @@ ANIM.add('MB-直線與圓-007',{W:560,H:500,
       await L.tween(a?1200:0,p=>pth.setAttribute('d',P.fpath(f,4-0.6*p*4.3,4+p*3.2)))}},
     {cap:'垂直平分線 y − 4 = −3/2 (x − 4) 碰到 x 軸（y = 0）的地方就是 P：x = 4 + 8/3 = 20/3。',eq:'0 − 4 = −3/2 (x − 4) → x = 20/3',async run(S,a){const L=ANIM.API,C=L.C,P=S.P;
       const d=L.dot(S.top,P.X(20/3),P.Y(0),C.pen(),8);await L.tween(a?600:0,p=>d.setAttribute('r',8*p));
-      L.text(S.top,P.X(20/3),P.Y(0)+52,'P(20/3, 0)','hand','middle')}},
+      L.text(S.top,P.X(20/3)-8,P.Y(0)+52,'P(20/3, 0)','hand','end')}},
     {cap:'檢查：PA² 和 PB² 都是 325/9，真的一樣遠。P 的 x 坐標是 20/3。',eq:'PA² = (17/3)² + 2² = 325/9，PB² = (1/3)² + 6² = 325/9',async run(S,a){const L=ANIM.API,C=L.C,P=S.P;
       const l1=L.line(S.top,P.X(20/3),P.Y(0),P.X(20/3),P.Y(0),C.good(),3),l2=L.line(S.top,P.X(20/3),P.Y(0),P.X(20/3),P.Y(0),C.good(),3);
       await L.tween(a?900:0,p=>{l1.setAttribute('x2',P.X(L.lerp(20/3,1,p)));l1.setAttribute('y2',P.Y(2*p));l2.setAttribute('x2',P.X(L.lerp(20/3,7,p)));l2.setAttribute('y2',P.Y(6*p))})}},
@@ -5176,7 +5214,7 @@ ANIM.add('MB-直線與圓-034',{W:560,H:500,
     {cap:'把直線從 PB 逆時針轉到 PA：斜率從 2/3 一直變大，過了鉛直（沒有斜率）以後，從很負的數變到 −3/2。',async run(S,a){const L=ANIM.API,P=S.P;
       await L.tween(a?2400:0,p=>{const th=L.lerp(S.th0,S.th1,p);S.setRot(th);
         const R=12;S.fan.setAttribute('d',`M${P.X(2)},${P.Y(0)}L${P.X(2+R*Math.cos(S.th0))},${P.Y(R*Math.sin(S.th0))}L${P.X(2+R*Math.cos(th))},${P.Y(R*Math.sin(th))}Z`);
-        const m=Math.tan(th);S.mt.textContent=Math.abs(m)>15?'m：鉛直':'m = '+(m<0?'−':'')+Math.abs(m).toFixed(2)})}},
+        const m=Math.tan(th);S.mt.textContent=Math.abs(m)>15?'m：鉛直':'m = '+(m<0?'−':'')+Math.abs(m).toFixed(2)});S.mt.textContent='m = −3/2'}},
     {cap:'所以 m ≥ 2/3 或 m ≤ −3/2，選 (1)。夾在中間的斜率（像 m = 0）根本碰不到線段。',eq:'m ≤ −3/2 或 m ≥ 2/3',run(S){S.mt.textContent='';S.rot.setAttribute('x1',0);S.rot.setAttribute('x2',0);S.rot.setAttribute('y1',0);S.rot.setAttribute('y2',0)}},
   ]});
 
@@ -5199,7 +5237,7 @@ ANIM.add('MB-矩陣-012',{W:560,H:380,
     {cap:'2×3 矩陣是 2 列 3 行。aᵢⱼ 是第 i 列、第 j 行的元，i 管橫的列、j 管直的行。',run(){}},
     {cap:'第 1 列 i = 1：a₁ⱼ = 1² − j，依序是 0、−1、−2。',eq:'a₁₁ = 1 − 1 = 0，a₁₂ = 1 − 2 = −1，a₁₃ = 1 − 3 = −2',async run(S,a){await S.fill(S,1,a)}},
     {cap:'第 2 列 i = 2：a₂ⱼ = 2² − j，依序是 3、2、1。',eq:'a₂₁ = 4 − 1 = 3，a₂₂ = 4 − 2 = 2，a₂₃ = 4 − 3 = 1',async run(S,a){await S.fill(S,2,a)}},
-    {cap:'所以 A 第 1 列是 0、−1、−2，第 2 列是 3、2、1，選 (1)。',run(S){S.hl.setAttribute('fill-opacity',0)}},
+    {cap:'所以 A 第 1 列是 0、−1、−2，第 2 列是 3、2、1，選 (1)。',eq:'A = [0  −1  −2；3  2  1]',run(S){S.hl.setAttribute('fill-opacity',0)}},
   ]});
 
 ANIM.add('MB-矩陣-023',{W:600,H:500,
@@ -5231,7 +5269,7 @@ ANIM.add('MB-矩陣-023',{W:600,H:500,
 (()=>{
 ANIM.add('MB-空間概念-005',{W:600,H:390,
   init(svg,L){
-    const P3=L.proj3(215,255,54);
+    const P3=L.proj3(215,290,64);
     const V={A:[2,-2,0],B:[2,2,0],C:[-2,2,0],D:[-2,-2,0],P:[0,0,2],O:[0,0,0],M:[2,0,0]};const Q={};for(const k in V)Q[k]=P3(V[k]);
     const ln=(a,b,col,w,d)=>L.line(svg,Q[a][0],Q[a][1],Q[b][0],Q[b][1],col,w,d);
     ['DA','DC','DP'].forEach(e=>ln(e[0],e[1],L.C.soft(),2,'6 5'));
@@ -5250,7 +5288,7 @@ ANIM.add('MB-空間概念-005',{W:600,H:390,
       L.dot(S.lay,Q.M[0],Q.M[1],L.C.good(),6);L.text(S.lay,Q.M[0]-6,Q.M[1]+26,'M','lbl','middle');
       const l1=L.line(S.lay,Q.M[0],Q.M[1],Q.O[0],Q.O[1],L.C.good(),3.5),l2=L.line(S.lay,Q.M[0],Q.M[1],Q.P[0],Q.P[1],L.C.good(),3.5);
       await L.tween(a?800:0,p=>{l1.style.opacity=p;l2.style.opacity=p});
-      L.text(S.lay,Q.M[0]+20,Q.M[1]-26,'θ','hand')}},
+      L.text(S.lay,Q.M[0]+26,Q.M[1]-22,'θ','hand')}},
     {cap:'把三角形 PMO 拿出來看：OM 是底邊一半 = 2，PO = 2，直角在 O，所以斜邊 PM = 2√2。',eq:'PM = √(2² + 2²) = 2√2',async run(S,a){const L=ANIM.API;
       const O=[455,290],M=[570,290],P=[455,175];const g=S.ins;
       L.poly(g,[O,M,P],{fill:'none',stroke:L.C.good(),'stroke-width':3.5,'stroke-linejoin':'round'});
@@ -5287,11 +5325,11 @@ ANIM.add('MB-空間概念-007',{W:600,H:470,
       L.text(g,285,350,'圓錐','hand big');
       if(a)await L.tween(900,p=>g.style.opacity=p)}},
     {cap:'對照其他選項：正四角錐俯視是正方形加對角線，圓柱前視是長方形，都不合。選 (5)。',run(S){const L=ANIM.API;
-      const x=430,y=300;L.el('rect',{x,y,width:70,height:70,fill:'none',stroke:L.C.pen(),'stroke-width':2.5},S.lay);
+      const x=395,y=300;L.el('rect',{x,y,width:70,height:70,fill:'none',stroke:L.C.pen(),'stroke-width':2.5},S.lay);
       L.line(S.lay,x,y,x+70,y+70,L.C.pen(),2);L.line(S.lay,x+70,y,x,y+70,L.C.pen(),2);
-      L.text(S.lay,x+35,y+100,'四角錐 ✗','hand','middle');
-      L.el('rect',{x:525,y:300,width:52,height:70,fill:'none',stroke:L.C.pen(),'stroke-width':2.5},S.lay);
-      L.text(S.lay,551,y+140,'圓柱 ✗','hand','middle')}},
+      L.text(S.lay,x+35,y-12,'俯視','tick','middle');L.text(S.lay,x+35,y+104,'四角錐 ✗','hand','middle');
+      L.el('rect',{x:530,y:300,width:52,height:70,fill:'none',stroke:L.C.pen(),'stroke-width':2.5},S.lay);
+      L.text(S.lay,556,y-12,'前視','tick','middle');L.text(S.lay,556,y+104,'圓柱 ✗','hand','middle')}},
   ]});
 })();
 
@@ -5338,7 +5376,7 @@ ANIM.add('MB-空間概念-026',{W:600,H:490,
     const lay=L.g(svg);return{lay,reset(){L.clear(lay)}}},
   steps:[
     {cap:'從側面切開地球看：北緯 45° 的緯線圈，半徑 r = 6400 cos45° = 3200√2。',eq:'r = 6400 × cos45° = 3200√2',async run(S,a){const L=ANIM.API;const g=L.g(S.lay);
-      const cx=150,cy=250;L.el('circle',{cx,cy,r:R,fill:'none',stroke:L.C.ink(),'stroke-width':2.5},g);
+      const cx=300,cy=250;L.el('circle',{cx,cy,r:R,fill:'none',stroke:L.C.ink(),'stroke-width':2.5},g);
       L.line(g,cx,cy-R-18,cx,cy+R+18,L.C.soft(),1.5,'6 5');L.text(g,cx,cy-R-24,'N','lbl','middle');
       L.line(g,cx-R,cy,cx+R,cy,L.C.soft(),1.5,'6 5');L.dot(g,cx,cy,L.C.ink(),4);L.text(g,cx-8,cy+24,'O','lbl','end');
       L.line(g,cx,cy,cx+r,cy-r,L.C.ink(),2);L.text(g,cx+r/2+8,cy-r/2+22,'6400','tick');
@@ -5346,26 +5384,26 @@ ANIM.add('MB-空間概念-026',{W:600,H:490,
       const ch=L.line(g,cx-r,cy-r,cx+r,cy-r,L.C.good(),4);L.line(g,cx,cy-r,cx+r,cy-r,L.C.cta(),4);
       L.text(g,cx+r/2,cy-r-10,'r','hand','middle');
       if(a)await L.tween(700,p=>g.style.opacity=p)}},
-    {cap:'從北極往下看這個緯線圈：經度差 90°，沿緯線走 ¼ 圈 = 1600√2π；直線距離 PQ = √2 r = 6400。',eq:'緯線弧 = 3200√2 × π/2 = 1600√2π，PQ = √2 × 3200√2 = 6400',async run(S,a){const L=ANIM.API;const g=L.g(S.lay);
-      const cx=455,cy=145;L.el('circle',{cx,cy,r,fill:'none',stroke:L.C.good(),'stroke-width':3},g);L.dot(g,cx,cy,L.C.ink(),4);
+    {cap:'從北極往下看這個緯線圈：經度差 90°，沿緯線走 ¼ 圈 = 1600√2π；直線距離 PQ = √2 r = 6400。',eq:'緯線弧 = 3200√2 × π/2 = 1600√2π，PQ = √2 × 3200√2 = 6400',async run(S,a){const L=ANIM.API;L.clear(S.lay);const g=L.g(S.lay);
+      const cx=170,cy=230;L.el('circle',{cx,cy,r,fill:'none',stroke:L.C.good(),'stroke-width':3},g);L.text(g,20,44,'r = 3200√2','lbl','start');L.dot(g,cx,cy,L.C.ink(),4);
       const P=[cx-r,cy],Q=[cx,cy+r];
       L.line(g,cx,cy,P[0],P[1],L.C.soft(),1.5,'5 5');L.line(g,cx,cy,Q[0],Q[1],L.C.soft(),1.5,'5 5');
       L.el('path',{d:`M${cx-14},${cy}h14v14`,fill:'none',stroke:L.C.ink(),'stroke-width':1.5},g);
       const arc=L.el('path',{d:`M${P[0]},${P[1]}A${r},${r} 0 0 0 ${Q[0]},${Q[1]}`,fill:'none',stroke:L.C.cta(),'stroke-width':5},g);
       L.line(g,P[0],P[1],Q[0],Q[1],L.C.pen(),3);
       [[P,'P',-10,6,'end'],[Q,'Q',0,28,'middle']].forEach(([p,s,dx,dy,an])=>{L.dot(g,p[0],p[1],L.C.ink(),6);L.text(g,p[0]+dx,p[1]+dy,s,'lbl',an)});
-      L.text(g,cx-r-28,cy+r+30,'1600√2π','hand','middle');L.text(g,cx-r/2+10,cy+r/2-12,'6400','hand');
-      L.text(g,cx+r+8,cy-r+8,'俯視','tick');
+      L.text(g,70,348,'1600√2π','hand','middle');L.text(g,cx-r/2+14,cy+r/2-14,'6400','hand','middle');
+      L.text(g,cx,cy-r-16,'北極往下看','tick','middle');
       if(a)await L.tween(700,p=>g.style.opacity=p)}},
-    {cap:'弦長 6400 剛好等於地球半徑，所以地心 O 和 P、Q 圍成正三角形，大圓圓心角 60°，球面距離 6400 × π/3。',eq:'球面距離 = 6400 × π/3 = 6400π/3',async run(S,a){const L=ANIM.API;const g=L.g(S.lay);
-      const O=[455,465],P=[O[0]-R/2,O[1]-R*0.866],Q=[O[0]+R/2,O[1]-R*0.866];
+    {cap:'弦長 6400 剛好等於地球半徑，所以地心 O 和 P、Q 圍成正三角形，大圓圓心角 60°，球面距離 6400 × π/3。（左邊保留緯線弧，等一下比較）',eq:'球面距離 = 6400 × π/3 = 6400π/3',async run(S,a){const L=ANIM.API;const g=L.g(S.lay);
+      const O=[450,430],P=[O[0]-R/2,O[1]-R*0.866],Q=[O[0]+R/2,O[1]-R*0.866];
       L.poly(g,[O,P,Q],{fill:'none',stroke:L.C.ink(),'stroke-width':2.5});
       L.el('path',{d:`M${P[0]},${P[1]}A${R},${R} 0 0 1 ${Q[0]},${Q[1]}`,fill:'none',stroke:L.C.good(),'stroke-width':5},g);
       L.dot(g,O[0],O[1],L.C.ink(),5);L.text(g,O[0]+12,O[1]+4,'O','lbl');L.text(g,P[0]-10,P[1]+6,'P','lbl','end');L.text(g,Q[0]+10,Q[1]+6,'Q','lbl');
-      L.text(g,O[0],O[1]-26,'60°','hand','middle');L.text(g,O[0]-R/4-10,O[1]-R*0.43+8,'6400','tick','end');L.text(g,O[0],P[1]+24,'6400','tick','middle');
+      L.el('path',{d:`M${O[0]-15},${O[1]-26}A30,30 0 0 1 ${O[0]+15},${O[1]-26}`,fill:'none',stroke:L.C.cta(),'stroke-width':2.5},g);L.text(g,O[0],O[1]-40,'60°','hand','middle');L.text(g,O[0],O[1]-R-14,'6400π/3','handg','middle');L.text(g,O[0]-R/4-10,O[1]-R*0.43+8,'6400','tick','end');L.text(g,O[0],P[1]+24,'6400','tick','middle');
       if(a)await L.tween(700,p=>g.style.opacity=p)}},
     {cap:'緯線 1600√2π ≈ 2263π，比大圓 6400π/3 ≈ 2133π 長，(4) 錯。經度差不是 180°，大圓不過北極，(1) 錯。選 (2)(3)(5)。',eq:'1600√2π ≈ 2263π > 2133π ≈ 6400π/3',run(S){const L=ANIM.API;
-      L.text(S.lay,20,440,'大圓弧最短','handg')}},
+      L.text(S.lay,450,250,'大圓弧較短','handg big','middle')}},
   ]});
 })();
 
@@ -5390,8 +5428,9 @@ ANIM.add('MB-空間概念-029',{W:600,H:490,
     {cap:'北緯 30° 和 60° 比一比：cos 30° : cos 60° = √3/2 : 1/2 = √3 : 1。',eq:'cos 30° : cos 60° = √3 : 1',run(S){const L=ANIM.API;
       const t=Math.PI/6;L.text(S.lay,CX+R*Math.cos(t)+10,CY-R*Math.sin(t)+8,'√3R/2（30°）','hand');mark(L,S.chk,4,true)}},
     {cap:'每一點都是 24 小時轉一圈，週期都一樣。南、北緯 40° 的緯線一樣長，線速度相同。選 (1)(4)。',eq:'週期都是 24 小時；cos(40°) 南北相同',async run(S,a){const L=ANIM.API;
-      const g=L.g(S.lay);lat(L,g,40,L.C.soft(),2.5);lat(L,g,-40,L.C.soft(),2.5);
-      const t=40*Math.PI/180;L.text(g,CX-R*Math.cos(t)-8,CY-R*Math.sin(t)+8,'北 40°','tick','end');L.text(g,CX-R*Math.cos(t)-8,CY+R*Math.sin(t)+8,'南 40°','tick','end');
+      L.clear(S.lay);const g=L.g(S.lay);lat(L,g,40,L.C.good(),3.5);lat(L,g,-40,L.C.good(),3.5);
+      const t=40*Math.PI/180,hx=CX+R*Math.cos(t)+10;L.text(g,CX-R*Math.cos(t)-8,CY-R*Math.sin(t)+8,'北 40°','lbl','end');L.text(g,CX-R*Math.cos(t)-8,CY+R*Math.sin(t)+8,'南 40°','lbl','end');
+      L.text(g,CX+20,CY+10,'兩條一樣長','handg','start');
       if(a)await L.tween(600,p=>g.style.opacity=p);mark(L,S.chk,3,false);mark(L,S.chk,5,false)}},
   ]});
 })();
@@ -5419,11 +5458,15 @@ ANIM.add('MB-空間概念-030',{W:600,H:490,
       const g=L.g(S.lay);ring(L,g,CY,R,L.C.good(),4);L.text(g,CX+R+10,CY+34,'赤道（大圓）','handg');
       if(a)await L.tween(700,p=>g.style.opacity=p);mark(L,S.chk,4,true)}},
     {cap:'經線從北極走到南極，所在平面通過地軸，也就通過球心，所以每一條經線都是半個大圓。',eq:'經線平面過球心 ⇒ 半個大圓',async run(S,a){const L=ANIM.API;
-      const rx=R*0.5;const p=L.el('path',{d:`M${CX},${CY-R}A${rx},${R} 0 0 1 ${CX},${CY+R}`,fill:'none',stroke:L.C.good(),'stroke-width':4},S.lay);
+      L.clear(S.lay);const rx=R*0.5;const p=L.el('path',{d:`M${CX},${CY-R}A${rx},${R} 0 0 1 ${CX},${CY+R}`,fill:'none',stroke:L.C.good(),'stroke-width':4},S.lay);
       const len=p.getTotalLength();p.setAttribute('stroke-dasharray',len);p.setAttribute('stroke-dashoffset',len);
       await L.tween(a?1200:0,q=>p.setAttribute('stroke-dashoffset',len*(1-q)));p.removeAttribute('stroke-dasharray');
       L.text(S.lay,CX+rx+8,CY+R*0.62,'經線','handg');mark(L,S.chk,3,true)}},
-    {cap:'緯度越高，緯線越短（2πR cos θ 變小）。同緯度兩地的最短路徑是大圓弧，不沿緯線。選 (3)(4)。',eq:'緯線長 2πR cos θ 隨 θ 增大而減小',run(S){const L=ANIM.API;mark(L,S.chk,2,false);mark(L,S.chk,5,false)}},
+    {cap:'緯度越高，緯線越短（2πR cos θ 變小）。同緯度兩地的最短路徑是大圓弧，不沿緯線。選 (3)(4)。',eq:'緯線長 2πR cos θ 隨 θ 增大而減小',async run(S,a){const L=ANIM.API;
+      L.clear(S.lay);const g=L.g(S.lay);ring(L,g,CY,R,L.C.good(),3.5);
+      for(const d of [30,60]){const t=d*Math.PI/180,y=CY-R*Math.sin(t),rx=R*Math.cos(t);ring(L,g,y,rx,L.C.cta(),3.5);L.text(g,CX+rx+12,y+6,'北緯 '+d+'°','hand')}
+      L.text(g,CX+R+10,CY+34,'赤道最長','handg');
+      if(a)await L.tween(700,p=>g.style.opacity=p);mark(L,S.chk,2,false);mark(L,S.chk,5,false)}},
   ]});
 })();
 
@@ -5540,7 +5583,7 @@ ANIM.add('PH-波動與光-004',{W:600,H:500,
       await L.tween(a?2200:0,p=>S.drawSound(p*3,true));S.tag(S.lay,330,S.pan[0].y1-20,'繞到牆後','hand',120)}},
     {cap:'可見光波長只有 400～700 nm，比門寬小太多，幾乎直直穿過去，牆後看不到人。(D) 對。',eq:'λ光 ≈ 400～700 nm ≪ 門寬 → 繞射不明顯',async run(S,a){const L=ANIM.API;
       await L.tween(a?2200:0,p=>S.drawLight(p*3,true));S.tag(S.lay,330,S.pan[1].y1-20,'直直前進','hand',120)}},
-    {cap:'能不能繞過去看的是波長和開口大小，不是波速；光也會繞射，只是要很窄的狹縫。選 (C)(D)。',eq:'繞射明不明顯：比的是 λ 和開口大小',run(S){}},
+    {cap:'能不能繞過去看的是波長和開口大小，不是波速；光也會繞射，只是要很窄的狹縫。選 (C)(D)。',eq:'繞射明不明顯：比的是 λ 和開口大小 → 選 (C)(D)',run(S){}},
   ]});
 
 ANIM.add('PH-波動與光-009',{W:600,H:440,
@@ -5557,7 +5600,7 @@ ANIM.add('PH-波動與光-009',{W:600,H:440,
     const P0=[20,250],P1=[220,190];const d0=nrm([P1[0]-P0[0],P1[1]-P0[1]]);
     const trace=n=>{const d1=refr(d0,nL,1/n);const P2=hit(P1,d1,A,C);const d2=refr(d1,nR,n);const t=(sx-P2[0])/d2[0];return[P2,[sx,P2[1]+d2[1]*t]]};
     const red=trace(1.45),vio=trace(1.65);
-    const inc=L.line(svg,P0[0],P0[1],P1[0],P1[1],L.C.ink(),5);L.text(svg,30,232,'白光','lbl','start');
+    const inc=L.line(svg,P0[0],P0[1],P1[0],P1[1],L.C.ink(),5);L.text(svg,30,220,'白光','lbl','start');
     const lay=L.g(svg);
     return{P1,red,vio,lay,reset(){L.clear(lay)}}},
   steps:[
@@ -5569,7 +5612,7 @@ ANIM.add('PH-波動與光-009',{W:600,H:440,
       const r=L.line(S.lay,S.red[0][0],S.red[0][1],S.red[0][0],S.red[0][1],L.C.pen(),3.5),v=L.line(S.lay,S.vio[0][0],S.vio[0][1],S.vio[0][0],S.vio[0][1],L.C.ink(),3.5);
       await L.tween(a?1100:0,p=>{r.setAttribute('x2',L.lerp(S.red[0][0],S.red[1][0],p));r.setAttribute('y2',L.lerp(S.red[0][1],S.red[1][1],p));v.setAttribute('x2',L.lerp(S.vio[0][0],S.vio[1][0],p));v.setAttribute('y2',L.lerp(S.vio[0][1],S.vio[1][1],p))});
       L.text(S.lay,S.red[1][0]-12,S.red[1][1]-8,'紅','lbl','end');L.text(S.lay,S.vio[1][0]-12,S.vio[1][1]+24,'紫','lbl','end')}},
-    {cap:'折射率大的紫光在玻璃中比較慢；進入玻璃頻率不變，顏色也不變。選 (A)(E)。',eq:'v = c ÷ n → n紫 大，v紫 小',async run(S,a){const L=ANIM.API;
+    {cap:'折射率大的紫光在玻璃中比較慢；進入玻璃頻率不變，顏色也不變。選 (A)(E)。',eq:'v = c ÷ n：n紫 大 → v紫 小；頻率不變 → 選 (A)(E)',async run(S,a){const L=ANIM.API;
       const t=L.text(S.lay,40,400,'紫光偏折較多，n紫 > n紅','hand','start');t.style.opacity=0;await L.tween(a?600:0,p=>t.style.opacity=p)}},
   ]});
 
@@ -5655,7 +5698,7 @@ ANIM.add('PH-能量-007',{W:600,H:480,
       L.el('path',{d,fill:'none',stroke:L.C.cta(),'stroke-width':2.5,'stroke-dasharray':'8 6'},S.paths);
       await L.tween(a?1800:0,p=>{const[x,y]=S.curve(p);S.put(x,y)});
       L.text(S.lay,300,300,'ΔU = 30 J','hand big','middle');L.text(S.lay,300,340,'與路徑無關','hand','middle')}},
-    {cap:'若手緩慢等速把書往上舉，動能沒變，手出的力等於 mg = 20 N，作功 20 × 1.5 = 30 J，(C) 對。',eq:'W手 = 20 N × 1.5 m = 30 J',async run(S,a){const L=ANIM.API;L.clear(S.lay);
+    {cap:'若手緩慢等速把書往上舉，動能沒變，手出的力等於 mg = 20 N，作功 20 × 1.5 = 30 J，(C) 對。',eq:'W手 = 20 N × 1.5 m = 30 J',async run(S,a){const L=ANIM.API;L.clear(S.lay);L.clear(S.paths);
       await L.tween(a?1000:0,p=>S.put(150,L.lerp(S.floor,290,p)));
       L.arrow(S.lay,150,262,150,192,L.C.cta(),4);L.text(S.lay,162,212,'手 20 N','hand','start');
       L.arrow(S.lay,150,290,150,360,L.C.pen(),4);L.text(S.lay,162,350,'mg 20 N','hand','start')}},
@@ -5701,9 +5744,9 @@ ANIM.add('PH-能量-012',{W:600,H:520,
       const n=S.Yb(S.c);L.line(S.lay,40,n,300,n,L.C.soft(),2,'4 6');L.text(S.lay,40,n-10,'原長','tick','start')}},
     {cap:'再往上彈力小於重力，球已經開始減速；到原長才離開彈簧。所以 (C) 對、(A) 錯。',eq:'彈力 < mg → 減速',async run(S,a){const L=ANIM.API;
       await L.tween(a?1600:0,p=>{const y=L.lerp(0.2,0.45,p);S.setBall(y);S.setCurve(y)});
-      const n=S.Yb(S.c)-S.R,x=S.gx+S.v(S.c)*S.vs;L.dot(S.lay,x,n,L.C.ink(),5);L.text(S.lay,x-10,n-6,'離開彈簧','tick','end')}},
+      const n=S.Yb(S.c)-S.R,x=S.gx+S.v(S.c)*S.vs;L.dot(S.lay,x,n,L.C.ink(),5);L.line(S.lay,x-34,n+1,x-8,n+1,L.C.soft(),1.5);L.text(S.lay,x-38,n+7,'離開彈簧','tick','end')}},
     {cap:'釋放時和最高點動能都是 0，彈力位能減少多少，重力位能就增加多少，(B) 對。最高點仍受重力，合力不為零。選 (B)(C)。',eq:'ΔU彈（減少）= ΔU重（增加）',async run(S,a){const L=ANIM.API;
-      const t=S.Yb(0.45)-S.R;const g=L.g(S.lay);L.text(g,S.sx+36,t+8,'v = 0','hand','start');
+      L.clear(S.lay);const t=S.Yb(0.45)-S.R;const g=L.g(S.lay);L.text(g,S.sx+36,t+8,'v = 0','hand','start');
       L.arrow(g,S.sx-36,t-10,S.sx-36,t+40,L.C.pen(),4);L.text(g,S.sx-46,t+30,'mg','hand','end');
       g.style.opacity=0;await L.tween(a?600:0,p=>g.style.opacity=p)}},
   ]});
@@ -5752,6 +5795,7 @@ ANIM.add('PH-近代物理-004',{W:600,H:420,
     {cap:'用 hc ≈ 1240 eV·nm 去除以波長：1240 ÷ 460 ≈ 2.7 eV。',eq:'E = 1240 ÷ 460 ≈ 2.7 eV',async run(S,a){const L=ANIM.API;
       const t=L.text(S.lay,S.X(700),80,'1240 ÷ 460 ≈ 2.7 eV','hand big','middle');t.style.opacity=0;await L.tween(a?600:0,p=>t.style.opacity=p)}},
     {cap:'反過來把五種能隙換成波長，排在軸上：能隙越大，波長越短。',eq:'λ = 1240 ÷ E',async run(S,a){const L=ANIM.API;L.clear(S.lay);
+      {const x=S.X(460);L.clear(S.tgt);L.line(S.tgt,x,S.ya-84,x,S.ya,L.C.cta(),3,'8 6');L.text(S.tgt,x,S.ya+28,'460','tick','middle');L.text(S.tgt,x-8,S.ya-14,'目標','hand','end')}
       const rows={A:S.ya-50,B:S.ya-100,C:S.ya-50,D:S.ya-100,E:S.ya-50};
       for(const o of S.opts){const x=S.X(o.n);L.dot(S.lay,x,S.ya,L.C.ink(),6);L.line(S.lay,x,S.ya,x,rows[o.k]+8,L.C.soft(),1.5);
         L.text(S.lay,x,rows[o.k],`(${o.k}) ${o.e}`,'lbl','middle');if(o.k!=='D')L.text(S.lay,x,S.ya+28,String(Math.round(o.n)),'tick','middle');if(a)await L.wait(250)}}},
@@ -5770,7 +5814,7 @@ ANIM.add('PH-運動與力-003',{W:560,H:480,
     const mkH=(par,op)=>{const gg=L.g(par);L.el('rect',{x:-6,y:-4,width:12,height:52,rx:3,fill:L.C.mid()},gg);L.el('rect',{x:-26,y:-20,width:52,height:20,rx:4,fill:L.C.ink()},gg);gg.style.opacity=op;return gg};
     const mkF=(par,op)=>{const gg=L.g(par);L.el('path',{d:'M0,-26 C18,-10 16,26 0,40 C-16,26 -18,-10 0,-26Z',fill:'none',stroke:L.C.good(),'stroke-width':3},gg);L.line(gg,0,-26,0,48,L.C.good(),2.5);gg.style.opacity=op;return gg};
     const H=mkH(svg,1),F=mkF(svg,1);
-    L.text(svg,200,top-34,'鎚子','lbl','middle');L.text(svg,330,top-34,'羽毛','lbl','middle');
+    L.text(svg,166,top-30,'鎚子','lbl','end');L.text(svg,354,top-30,'羽毛','lbl','start');
     // 物體的參考點放在底部：鎚子底 +48、羽毛底 +48
     const set=d=>{const y=Yf(d)-48;H.setAttribute('transform',`translate(200,${y})`);F.setAttribute('transform',`translate(330,${y})`)};
     return{Yf,set,mkH,mkF,ghosts,lay,reset(){L.clear(ghosts);L.clear(lay);set(0)}}},
@@ -5783,7 +5827,7 @@ ANIM.add('PH-運動與力-003',{W:560,H:480,
         L.line(S.lay,380,S.Yf(d),420,S.Yf(d),L.C.soft(),2);L.text(S.lay,430,S.Yf(d)+7,'t = '+t.toFixed(1)+' s','tick','start')}
       await L.tween(a?1600:0,p=>S.set(1.6*p*p))}},
     {cap:'由 h = ½gt²，1.6 = ½ × 1.6 × t²，得 t² = 2，t = √2 ≈ 1.4 s。選 (C)。',eq:'t = √(2h ÷ g月) = √(2 × 1.6 ÷ 1.6) = √2 ≈ 1.4 s',async run(S,a){const L=ANIM.API;
-      L.line(S.lay,380,S.Yf(1.6),420,S.Yf(1.6),L.C.cta(),3);const t=L.text(S.lay,430,S.Yf(1.6)-14,'t ≈ 1.4 s','hand big','start');
+      L.line(S.lay,380,S.Yf(1.6),420,S.Yf(1.6),L.C.cta(),3);const t=L.text(S.lay,540,S.Yf(1.6)-16,'t ≈ 1.4 s','hand big','end');
       t.style.opacity=0;await L.tween(a?600:0,p=>t.style.opacity=p)}},
   ]});
 
@@ -5867,7 +5911,7 @@ ANIM.add('PH-電磁-002',{W:600,H:400,
       await L.tween(a?900:0,p=>{S.A.set(L.lerp(200,264,p));S.B.set(L.lerp(400,336,p))});
       S.A.q('+q/2');S.B.q('+q/2');S.A.c.setAttribute('stroke',L.C.good());S.B.c.setAttribute('stroke',L.C.good());
       L.text(S.lay,300,S.cy+110,'總電量 +q 平分','hand','middle')}},
-    {cap:'再拉開到相距 2r。兩球都帶正電，變成互相排斥。',async run(S,a){const L=ANIM.API,y=S.cy;L.clear(S.lay);
+    {cap:'再拉開到相距 2r。兩球都帶正電，變成互相排斥。',eq:'+q/2 與 +q/2，相距 2r → 同性相斥',async run(S,a){const L=ANIM.API,y=S.cy;L.clear(S.lay);
       await L.tween(a?1200:0,p=>{S.A.set(L.lerp(264,140,p));S.B.set(L.lerp(336,460,p))});
       L.arrow(S.lay,104,y,40,y,L.C.cta());L.arrow(S.lay,496,y,560,y,L.C.cta());L.text(S.lay,300,y-70,'排斥','hand','middle');
       L.line(S.lay,140,y+70,460,y+70,L.C.soft(),2);L.line(S.lay,140,y+60,140,y+80,L.C.soft(),2);L.line(S.lay,460,y+60,460,y+80,L.C.soft(),2);
