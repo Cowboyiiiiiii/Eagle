@@ -29,6 +29,8 @@
 .board .fig .hand{font-family:var(--hand);font-size:26px}.board .fig .hand:not([fill]){fill:var(--pen)}
 .board .fig .handg{font-family:var(--hand);font-size:26px}.board .fig .handg:not([fill]){fill:var(--good)}
 .board .fig .big{font-size:30px}
+
+.board .cap sup,.board .eq sup{font-size:.68em;line-height:0;vertical-align:.45em}
 </style>
 <style>
 /* Eagle 老師的批改講義：一張紙、紅筆批改、手寫評語。草綠外框＋橘色按鈕取自 Eagle 的 IG 圖卡。 */
@@ -220,6 +222,13 @@ const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const C={ink:()=>css('--ink'),soft:()=>css('--soft'),good:()=>css('--good'),pen:()=>css('--pen'),cta:()=>css('--cta'),
   grid:()=>css('--grid')||css('--hair'),paper:()=>css('--paper'),hair:()=>css('--hair'),brand:()=>css('--brand')||'#55ba6a',mid:()=>css('--mid'),blue:()=>css('--blue')||'#2c6bc9'};
+const SUPMAP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁺':'+','⁻':'−','ⁿ':'n','ˣ':'x'};
+function rich(node,s){node.textContent='';if(s==null)return;s=String(s);
+  const re=/\^[({]([^(){}]*)[)}]|\^([−\-]?\d+(?:\.\d+)?|[A-Za-zα-ωπ])|([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ⁿˣ]+)/g;let last=0,m;
+  while((m=re.exec(s))){if(m.index>last)node.appendChild(document.createTextNode(s.slice(last,m.index)));
+    const t=m[1]!=null?m[1]:m[2]!=null?m[2].replace('-','−'):[...m[3]].map(c=>SUPMAP[c]||c).join('');
+    const sup=document.createElement('sup');sup.textContent=t;node.appendChild(sup);last=re.lastIndex}
+  if(last<s.length)node.appendChild(document.createTextNode(s.slice(last)))}
 function el(tag,attrs,parent,text){const e=document.createElementNS(NS,tag);for(const k in attrs||{})e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;if(parent)parent.appendChild(e);return e}
 function g(parent){return el('g',{},parent)}
 function clear(node){while(node&&node.firstChild)node.removeChild(node.firstChild)}
@@ -236,7 +245,7 @@ function plane(svg,{x0,x1,y0,y1,W,H,pad=20,step=1,grid=true,axes=true,labels=fal
     for(let y=Math.ceil(y0/step)*step;y<=y1+1e-9;y+=step)el('line',{x1:X(x0),x2:X(x1),y1:Y(y),y2:Y(y),stroke:C.grid(),'stroke-width':1},root);}
   if(axes){if(y0<=0&&y1>=0)el('line',{x1:X(x0),x2:X(x1),y1:Y(0),y2:Y(0),stroke:C.ink(),'stroke-width':1.5},root);
     if(x0<=0&&x1>=0)el('line',{x1:X(0),x2:X(0),y1:Y(y0),y2:Y(y1),stroke:C.ink(),'stroke-width':1.5},root);
-    if(y0<=0&&y1>=0)el('text',{x:X(x1)-14,y:Y(0)-8},root,xl);if(x0<=0&&x1>=0)el('text',{x:X(0)+8,y:Y(y1)+20},root,yl);
+    if(y0<=0&&y1>=0)el('text',{x:X(x1)-4,y:Y(0)-8,'text-anchor':'end'},root,xl);if(x0<=0&&x1>=0)el('text',{x:X(0)+8,y:Y(y1)+20},root,yl);
     if(labels){for(let x=Math.ceil(x0);x<=x1;x+=labels)if(x)el('text',{x:X(x),y:Y(0)+22,'text-anchor':'middle',class:'tick'},root,String(x).replace('-','−'));
       for(let y=Math.ceil(y0);y<=y1;y+=labels)if(y)el('text',{x:X(0)-8,y:Y(y)+6,'text-anchor':'end',class:'tick'},root,String(y).replace('-','−'));}}
   /* 函數路徑：f 在 [a,b] 取樣，超出 y 範圍斷開 */
@@ -249,7 +258,12 @@ function arrow(parent,x1,y1,x2,y2,color,w=3){const a=Math.atan2(y2-y1,x2-x1),h=1
   el('line',{x1,y1,x2:x2-Math.cos(a)*h*0.6,y2:y2-Math.sin(a)*h*0.6,stroke:color,'stroke-width':w,'stroke-linecap':'round'},gg);
   el('path',{d:`M${x2},${y2}L${x2-h*Math.cos(a-0.45)},${y2-h*Math.sin(a-0.45)}L${x2-h*Math.cos(a+0.45)},${y2-h*Math.sin(a+0.45)}Z`,fill:color},gg);return gg}
 function dot(parent,x,y,color,r=6){return el('circle',{cx:x,cy:y,r,fill:color},parent)}
-function text(parent,x,y,s,cls='lbl',anchor='start'){return el('text',{x,y,class:cls,'text-anchor':anchor},parent,s)}
+function text(parent,x,y,s,cls='lbl',anchor='start'){const t=el('text',{x,y,class:cls,'text-anchor':anchor},parent,s);
+  if(typeof s==='string'&&/\^|[⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ⁿˣ]/.test(s)){t.textContent='';const re=/\^[({]([^(){}]*)[)}]|\^([−\-]?\d+(?:\.\d+)?|[A-Za-zα-ωπ])|([⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻ⁿˣ]+)/g;let last=0,m;
+    const add=(str,sup)=>{const sp=el('tspan',sup?{'font-size':'0.68em',dy:'-0.5em'}:{},t,str);if(sup){el('tspan',{dy:'0.5em','font-size':'1em'},t,'​')}};
+    while((m=re.exec(s))){if(m.index>last)add(s.slice(last,m.index));add(m[1]!=null?m[1]:m[2]!=null?m[2].replace('-','−'):[...m[3]].map(c=>SUPMAP[c]||c).join(''),true);last=re.lastIndex}
+    if(last<s.length)add(s.slice(last))}
+  return t}
 function poly(parent,pts,attrs){return el('polygon',Object.assign({points:pts.map(p=>p.join(',')).join(' ')},attrs||{}),parent)}
 function line(parent,x1,y1,x2,y2,color,w=2.5,dash){const a={x1,y1,x2,y2,stroke:color,'stroke-width':w,'stroke-linecap':'round'};if(dash)a['stroke-dasharray']=dash;return el('line',a,parent)}
 /* 簡易 3D：斜二測投影，回傳 P([x,y,z]) => [sx,sy] */
@@ -270,9 +284,9 @@ function mount(container,id){const def=REG[id];if(!def)return false;
   const L=API;let S=def.init(svg,L)||{};S.eq=eq;S.svg=svg;const steps=def.steps;let i=-1,busy=false;
   const prev=ctl.querySelector('.b-prev'),next=ctl.querySelector('.b-next'),dots=[...ctl.querySelectorAll('.dots i')];
   async function go(n,animate){busy=true;try{eq.textContent='';if(S.reset)S.reset();
-      for(let k=0;k<=n;k++){if(steps[k].eq!=null)eq.textContent=steps[k].eq;await steps[k].run(S,animate&&k===n)}}
+      for(let k=0;k<=n;k++){if(steps[k].eq!=null)rich(eq,steps[k].eq);await steps[k].run(S,animate&&k===n)}}
     catch(e){console.error('[anim '+id+']',e)}
-    i=n;cap.textContent=steps[n].cap;svg.setAttribute('aria-label',steps[n].cap);dots.forEach((d,k)=>d.classList.toggle('on',k<=n));
+    i=n;rich(cap,steps[n].cap);svg.setAttribute('aria-label',steps[n].cap);dots.forEach((d,k)=>d.classList.toggle('on',k<=n));
     prev.disabled=n===0;next.textContent=n===steps.length-1?'重播':'下一步';busy=false}
   next.onclick=()=>{if(busy)return;i===steps.length-1?go(0,true):go(i+1,true)};
   prev.onclick=()=>{if(busy||i<=0)return;go(i-1,false)};
